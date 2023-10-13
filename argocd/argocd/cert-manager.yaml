@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:chariotsolutions/gitops-playground.git
+    repoURL: https://github.com/drogerschariot/gitops-playground.git
     targetRevision: main
     path: argocd/cert-manager
     
