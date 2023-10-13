@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: gitops-issuer
+  namespace: cert-manager
+spec:
+  acme:
+    email: drogers@chariotsolutions.com
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ingress
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+
+  source:
+    chart: ingress-nginx
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    targetRevision: 4.7.2
+    helm:
+      releaseName: ingress-nginx
+      valuesObject:
+        controller:
+          metrics:
+            enabled: true
+            serviceMonitor:
+              additionalLabels:
+                release: kube-prometheus-stack
+          podAnnotations:
+            prometheus.io/path: /metrics
+            prometheus.io/port: "10254"
+            prometheus.io/scheme: http
+            prometheus.io/scrape: "true"
+          config:
+            compute-full-forwarded-for: "true"
+            use-forwarded-headers: "true"
+            proxy-body-size: "0"
+          replicaCount: 2
+          service:
+            annotations:
+              service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: ingress
