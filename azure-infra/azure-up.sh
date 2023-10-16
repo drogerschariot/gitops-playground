@@ -23,12 +23,18 @@ kubectl patch deploy argocd-server --namespace argocd --type='json' \
   "--insecure"
 ]}]'
 
-echo "Installing nginx-ingress and cert-manager ArgoCD Applications"
+echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications"
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
+kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
+# sleep for NS to be created
+sleep 120
 
-echo "Waiting for Applications to install...
+echo "Waiting for Applications to install..."
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --namespace ingress
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager
+
+echo "-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 echo "Ingress public IP"
