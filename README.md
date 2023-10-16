@@ -1,6 +1,6 @@
 # gitops-playground
 
-Spin up a K8s cluster in AWS or Azure for testing. Cluster will have install:
+Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services, etc. Install script will install:
 - [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)
 - [Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
 - [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
