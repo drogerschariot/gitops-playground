@@ -1,28 +1,39 @@
 # gitops-playground
 
-Spin up a K8s cluster in Azure to test out ArgoCD Apps.
+Spin up a K8s cluster in AWS or Azure for testing. Cluster will have install:
+- [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)
+- [Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
+- [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
+- [Cert Manager](https://cert-manager.io/)
 
-## Auth
-1. Login using `az login`. This resource group will use Chariot's [Microsoft Partner Network](https://portal.azure.com/#@chariotsolution.onmicrosoft.com/resource/subscriptions/6380d0fa-5d0c-4239-8302-3f40269c2e9c/overview)
+## Azure
 
-## Sping up AKS cluster
-1. `cd azure-infra`
-2. `terraform apply`
-3. `az aks get-credentials --resource-group gitops-playground --name gitops-k8s`
+### Requirements
 
-## Install ArgoCD
-- `helm repo add argo https://argoproj.github.io/argo-helm`
-- `kubectl create namespace argocd` 
-- `helm install argocd argo/argo-cd --namespace argocd`
-- `kubectl apply -f argocd/argocd/repos.yaml --namespace argocd`
-- `kubectl apply -f argocd/argocd/github-connector.yaml --namespace argocd`
-- Get Admin password: `kubectl -n default get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
-- Open svc port to admin GUI using K9s or kubectl.
+- [Azure cli](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
-## Add ArgoCD Apps
-Any Application CRD should be added to `/argocd` eg `./argocd/guestbook`
-- Create the application in ArgoCD GUI, and example would be the guestbook app which looks like this:
-![image](https://github.com/chariotsolutions/gitops-playground/assets/1655964/41c6cdb5-18a6-49d7-9583-07c3c9412726)
+### Install 
+1. `git clone https://github.com/drogerschariot/gitops-playground.git`
+2. `cd gitops-playground/azure-infra/`
+3. Login to Azure `az login`
+4. Run script `./azure-up.sh`
 
-## WARNING
-The gitops-playground resource group will self distruct every night.
+The script will run terraform to install required k8s infrastructure, install services, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
+
+After you install the script, the kubernetes context will be automatically installed. See `kubectl config get-contexts` You can access the cluster using apps like [K9s](https://k9scli.io/) or [Lens](https://k8slens.dev/). 
+
+## Access
+
+### Local
+
+- ArgoCD (http://localhost:8080/): `kubectl port-forward deployment/argocd-server 8080:8080 --namespace argocd`
+- Grafana (http://localhost:3000/): `kubectl port-forward deployment/kube-prometheus-stack-grafana 3000:3000 --namespace monitoring`
+- Prometheus: (http://localhost:9090): `kubectl port-forward svc/kube-prometheus-stack-prometheus 9090:http-web --namespace monitoring`
+
+## Teardown
+
+### Azure 
+- `cd gitops-playground/azure-infra/`
+- `terraform destroy`
