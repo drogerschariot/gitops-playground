@@ -27,8 +27,6 @@ echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
-# sleep for NS to be created
-sleep 120
 
 echo "Waiting for Applications to install..."
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --namespace ingress
