@@ -19,7 +19,8 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 2. `cd gitops-playground/azure-infra/`
 3. Copy example env file `cp azure-env .env` Edit the `.env` file and update environment variables.
 3. Login to Azure `az login`
-4. Run script `./azure-up.sh`
+4. `terraform init`
+5. Run script `./azure-up.sh`
 
 The script will run terraform to install required k8s infrastructure, install services, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
 
@@ -37,4 +38,5 @@ After you install the script, the kubernetes context will be automatically insta
 
 ### Azure 
 - `cd gitops-playground/azure-infra/`
+- `source .env`
 - `terraform destroy`
