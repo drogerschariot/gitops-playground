@@ -17,6 +17,7 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 ### Install 
 1. `git clone https://github.com/drogerschariot/gitops-playground.git`
 2. `cd gitops-playground/azure-infra/`
+3. Copy example env file `cp azure-env .env` Edit the `.env` file and update environment variables.
 3. Login to Azure `az login`
 4. Run script `./azure-up.sh`
 

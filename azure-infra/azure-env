@@ -1,0 +1,11 @@
+# Name of services
+export TF_VAR_name=gitops-playground
+
+# Azure Region
+export TF_VAR_location=eastus
+
+# Your public SSH key to access k8s nodes
+export TF_VAR_ssh_pub_key="ssh-rsa AAAAAAAAAA"
+
+# Email for Let's Encrypt
+export CERTBOT_EMAIL="my@email.com"

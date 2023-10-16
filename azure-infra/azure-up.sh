@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Grab Azure env variables
-source ./env
+source .env
 
 echo "Running Terraform..."
 terraform apply -auto-approve
