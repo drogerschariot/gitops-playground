@@ -4,6 +4,7 @@
 source .env
 
 echo "Running Terraform..."
+terraform init
 terraform apply -auto-approve
 
 echo "Fetching AKS creds for kubectl"
