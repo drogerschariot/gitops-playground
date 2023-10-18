@@ -4,8 +4,14 @@ export TF_VAR_name=gitops-playground
 # Azure Region
 export TF_VAR_location=eastus
 
+# K8s version
+export TF_VAR_k8s_version=1.27.3
+
+# Node Size
+export TF_VAR_node_size=standard_d2ads_v5
+
 # Your public SSH key to access k8s nodes
-export TF_VAR_ssh_pub_key="ssh-rsa AAAAAAAAAA"
+export TF_VAR_ssh_pub_key="ssh-rsa YOU_PUBLIC_KEY_HERE"
 
 # Email for Let's Encrypt
 export CERTBOT_EMAIL="my@email.com"
