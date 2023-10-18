@@ -7,17 +7,17 @@ export CERTBOT_EMAIL="my@email.com"
 # AWS Region
 export TF_VAR_region=us-east-1
 
-# Node Size
+# Node Type
 export TF_VAR_node_type=t3.medium
 
 # Node Size
 export TF_VAR_node_size=3
 
-# Node Size
+# Node Cluster Version
 export TF_VAR_cluster_version=1.24
 
-# Node Size
-export TF_VAR_k8s_version=19.0.4
+# EKS Module Version 
+export TF_VAR_k8s_version=19.17.2
 
 #OPTIONAL
 #export AWS_PROFILE=default
