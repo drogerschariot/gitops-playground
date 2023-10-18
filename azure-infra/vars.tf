@@ -13,9 +13,12 @@ variable "node_count" {
 
 variable "node_size" {
   type = string
-  default = "Standard_D2_v2"
 }
 
 variable "ssh_pub_key" {
+  type = string
+}
+
+variable "k8s_version" {
   type = string
 }
