@@ -38,6 +38,7 @@ spec:
           service:
             annotations:
               service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+              alb.ingress.kubernetes.io/scheme: internet-facing
   destination:
     server: "https://kubernetes.default.svc"
     namespace: ingress
