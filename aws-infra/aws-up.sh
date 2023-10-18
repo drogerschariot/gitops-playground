@@ -7,7 +7,7 @@ echo "Running Terraform..."
 terraform apply -auto-approve
 
 echo "Fetching AKS creds for kubectl"
-az aks get-credentials --resource-group $TF_VAR_name --name $TF_VAR_name-k8s --overwrite-existing
+aws eks update-kubeconfig --region $TF_VAR_region --name $TF_VAR_name-eks
 
 echo "Installing ArgoCD"
 kubectl create namespace argocd
@@ -38,4 +38,4 @@ echo "-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 echo "Ingress public IP"
-kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
