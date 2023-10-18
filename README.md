@@ -6,6 +6,24 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 - [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 - [Cert Manager](https://cert-manager.io/)
 
+## AWS
+
+### Requirements
+
+- [AWS cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+
+### Install 
+1. `git clone https://github.com/drogerschariot/gitops-playground.git`
+2. `cd gitops-playground/aws-infra/`
+3. Copy example env file `cp aws-env .env` Edit the `.env` file and update environment variables.
+4. Run script `./aws-up.sh`
+
+The script will run terraform to install required k8s infrastructure, install services, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
+
+After you install the script, the kubernetes context will be automatically installed. See `kubectl config get-contexts` You can access the cluster using apps like [K9s](https://k9scli.io/) or [Lens](https://k8slens.dev/). 
+
 ## Azure
 
 ### Requirements
@@ -19,8 +37,7 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 2. `cd gitops-playground/azure-infra/`
 3. Copy example env file `cp azure-env .env` Edit the `.env` file and update environment variables.
 3. Login to Azure `az login`
-4. `terraform init`
-5. Run script `./azure-up.sh`
+4. Run script `./azure-up.sh`
 
 The script will run terraform to install required k8s infrastructure, install services, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
 
@@ -36,7 +53,11 @@ After you install the script, the kubernetes context will be automatically insta
 
 ## Teardown
 
+### AWS 
+- `cd gitops-playground/aws-infra/`
+- `./aws-down.sh`
+
+
 ### Azure 
 - `cd gitops-playground/azure-infra/`
-- `source .env`
-- `terraform destroy`
+- `./azure-down.sh`
