@@ -1,4 +1,8 @@
 # [CloudNativePG](https://cloudnative-pg.io/)
+<p align="center">
+  <img src="https://github.com/drogerschariot/gitops-playground/assets/1655964/fea4a793-5f26-4559-881c-572015f01ae0" />
+</p>
+
 CloudNativePG is the Kubernetes operator that covers the full lifecycle of a highly available PostgreSQL database cluster with a primary/standby architecture, using native streaming replication.
 
 ## Install
@@ -6,7 +10,7 @@ CloudNativePG is the Kubernetes operator that covers the full lifecycle of a hig
 - `./cnpg-up.sh`
 
 ## Access
-A Sample cluster using the [Cluster CRD](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/config/crd/bases/postgresql.cnpg.io_clusters.yaml) is install for you with the following manifest
+A Sample cluster using the [Cluster CRD](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/config/crd/bases/postgresql.cnpg.io_clusters.yaml) is installed for you with the following manifest
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
