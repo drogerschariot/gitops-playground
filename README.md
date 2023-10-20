@@ -34,6 +34,10 @@ After you install the script, the kubernetes context will be automatically insta
 - Grafana (http://localhost:3000/): `kubectl port-forward deployment/kube-prometheus-stack-grafana 3000:3000 --namespace monitoring`
 - Prometheus: (http://localhost:9090): `kubectl port-forward svc/kube-prometheus-stack-prometheus 9090:http-web --namespace monitoring`
 
+## Services
+The following service are available to install and test. Click on the link to access install instructions.
+- [CloudNativePG]()
+
 ## Teardown
 
 ### Azure 

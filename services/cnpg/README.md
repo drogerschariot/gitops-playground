@@ -50,7 +50,7 @@ You can access the cluster using the rw and ro services:
 - Read Only - `kubectl port-forward svc/test-db-ro 5432:postgres`
 - Read/Write - `kubectl port-forward svc/test-db-rw 5432:postgres`
 
-## Backup
+## [Backup](https://cloudnative-pg.io/documentation/1.16/backup_recovery/)
 Included is an example of a [ScheduledBackup CRD](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml) `kubectl apply -f backup.yml`.
 
 ```yaml
