@@ -1,6 +1,6 @@
 # gitops-playground
 
-Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services, etc. Install script will install:
+Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services, etc in a real world kubernetes environment. Base script will install:
 - [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)
 - [Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
 - [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
@@ -50,6 +50,10 @@ After you install the script, the kubernetes context will be automatically insta
 - ArgoCD (http://localhost:8080/): `kubectl port-forward deployment/argocd-server 8080:8080 --namespace argocd`
 - Grafana (http://localhost:3000/): `kubectl port-forward deployment/kube-prometheus-stack-grafana 3000:3000 --namespace monitoring`
 - Prometheus: (http://localhost:9090): `kubectl port-forward svc/kube-prometheus-stack-prometheus 9090:http-web --namespace monitoring`
+
+## Services
+The following service are available to install and test. Click on the link to access install instructions.
+- [CloudNativePG](https://github.com/drogerschariot/gitops-playground/blob/main/services/cnpg/README.md)
 
 ## Teardown
 

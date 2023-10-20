@@ -1,0 +1,35 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: test-db
+spec:
+  description: "Test CNPG Database"
+  instances: 3
+
+  replicationSlots:
+    highAvailability:
+      enabled: true
+    updateInterval: 300
+  primaryUpdateStrategy: unsupervised
+
+  postgresql:
+    parameters:
+      shared_buffers: 256MB
+      pg_stat_statements.max: '10000'
+      pg_stat_statements.track: all
+      auto_explain.log_min_duration: '10s'
+
+  logLevel: debug
+  storage:
+    size: 10Gi
+
+  monitoring:
+    enablePodMonitor: true
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "1"
+    limits:
+      memory: "1Gi"
+      cpu: "2"
