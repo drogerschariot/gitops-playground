@@ -33,3 +33,14 @@ spec:
     limits:
       memory: "1Gi"
       cpu: "2"
+
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://chariotsolutions-cnpg-backups/"
+      s3Credentials:
+        accessKeyId:
+          name: aws-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws-creds
+          key: ACCESS_SECRET_KEY

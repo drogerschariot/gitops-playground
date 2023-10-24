@@ -3,6 +3,7 @@
 source .env
 
 echo "Destroying Load Balancer..."
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 kubectl delete -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl delete namespace ingress
 
