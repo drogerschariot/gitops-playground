@@ -29,6 +29,7 @@ echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
 echo "Waiting for Applications to install..."
 sleep 30 #wait for ArgoCD to create namespace

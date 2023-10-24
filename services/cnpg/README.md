@@ -68,3 +68,25 @@ spec:
   cluster:
     name: test-db
 ```
+
+## [Backup](https://cloudnative-pg.io/documentation/1.16/backup_recovery/)
+Included is an example of a [Pooler CRD](https://cloudnative-pg.io/documentation/1.15/connection_pooling/) `kubectl apply -f pool.yml`.
+
+```yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: pooler-demo
+spec:
+  cluster:
+    name: test-db
+
+  instances: 3
+  type: rw
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "10"
+
+```

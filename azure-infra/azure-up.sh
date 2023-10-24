@@ -29,6 +29,7 @@ echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
 echo "Waiting for Applications to install..."
 sleep 30 #wait for ArgoCD to create namespace
@@ -40,3 +41,9 @@ echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 echo "Ingress public IP"
 kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+# Add metrics port to EKS ingress security group
+EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
+NODE_SG=`aws ec2 describe-instances --filter "Name=tag:eks:cluster-name,Values=$TF_VAR_name-eks" --query Reservations[0].Instances[0].NetworkInterfaces[0].Groups[0].GroupId --output text`
+aws ec2 authorize-security-group-ingress --group-id $EKS_SG --protocol tcp --port 4443 --source-group $NODE_SG
+

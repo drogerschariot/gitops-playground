@@ -20,7 +20,7 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 3. Copy example env file `cp aws-env .env` Edit the `.env` file and update environment variables.
 4. Run script `./aws-up.sh`
 
-The script will run terraform to install required k8s infrastructure, install services, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
+The script will run terraform to install required k8s infrastructure, install services, EBS CSI driver, and add kubernetes context. You will see the ArgoCD password and ingress public IP at the end of the output.
 
 After you install the script, the kubernetes context will be automatically installed. See `kubectl config get-contexts` You can access the cluster using apps like [K9s](https://k9scli.io/) or [Lens](https://k8slens.dev/). 
 

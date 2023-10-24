@@ -8,6 +8,10 @@ fi
 
 echo "Installing CNPG"
 kubectl apply -f ../../argocd/argocd/cnpg.yml
-sleep 10
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system 
+sleep 30
+kubectl -n cnpg-system wait --for condition=established --timeout=60s crd/clusters.postgresql.cnpg.io
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=60s
+echo "Installing test cluster"
 kubectl apply -f cnpg.yml
+sleep 30
+kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --namespace default --timeout=600s
