@@ -21,7 +21,11 @@ spec:
 
   logLevel: debug
   storage:
-    size: 10Gi
+    storageClass: gp3
+    size: 100Gi
+  walStorage:
+    storageClass: gp3
+    size: 50Gi
 
   monitoring:
     enablePodMonitor: true

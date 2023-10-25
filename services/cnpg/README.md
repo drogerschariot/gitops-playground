@@ -88,5 +88,11 @@ spec:
     parameters:
       max_client_conn: "1000"
       default_pool_size: "10"
+```
 
+## [Benchmarking](https://cloudnative-pg.io/documentation/current/benchmarking/)
+You can run pgbench using the cnpg kubectl plugin:
+
+```bash
+kubectl cnpg pgbench test-db --job-name bench-test2 --db-name app -- --initialize --scale 300
 ```
