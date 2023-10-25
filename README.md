@@ -5,6 +5,8 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 - [Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
 - [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 - [Cert Manager](https://cert-manager.io/)
+- [Keda](https://keda.sh/)
+- [K8s Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
 
 ## AWS
 
@@ -60,7 +62,6 @@ The following service are available to install and test. Click on the link to ac
 ### AWS 
 - `cd gitops-playground/aws-infra/`
 - `./aws-down.sh`
-
 
 ### Azure 
 - `cd gitops-playground/azure-infra/`

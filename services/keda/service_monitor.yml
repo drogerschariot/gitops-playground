@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prometheus-keda-exporter
+    app.kubernetes.io/part-of: prometheus-node-exporter
+    app.kubernetes.io/version: 1.6.1
+    jobLabel: keda-exporter
+    release: prometheus
+  name: prometheus-keda-exporter
+  namespace: monitoring
+spec:
+  attachMetadata:
+    node: false
+  endpoints:
+  - port: metrics
+    scheme: http
+    path: /metrics
+  jobLabel: jobLabel
+  namespaceSelector:
+    matchNames:
+    - keda
+    #any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keda-operator-metrics-apiserver
