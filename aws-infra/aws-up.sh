@@ -25,23 +25,39 @@ kubectl patch deploy argocd-server --namespace argocd --type='json' \
 ]}]'
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd
 
-echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications"
+echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications, Keda"
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl apply -f ../argocd/argocd/keda.yml --namespace argocd
 
-echo "Waiting for Applications to install..."
+#AWS Only
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 sleep 30 #wait for ArgoCD to create namespace
-for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --namespace ingress && break || echo "Waiting for ingress controller..."; sleep 30; done
-for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager && break || echo "Waiting for ingress cert-manager..."; sleep 30; done
-#for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager && break || echo "Waiting for ingress cert-manager..."; sleep 30; done
+
+echo "Waiting for Nginx Controller to install..."
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress && break || echo "Waiting for ingress controller..."; sleep 30; done
+
+echo "Waiting for Cert Manager install..."
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager && break || echo "Waiting for cert-manager..."; sleep 30; done
+
+echo "Waiting for Prometheus"
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=kube-prometheus-stack-operator --namespace monitoring && break || echo "Waiting for prometheus..."; sleep 30; done
+
+echo "Waiting for Keda"
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda && break || echo "Waiting for Keda..."; sleep 30; done
+
 
 echo "-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 echo "Ingress public IP"
 kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+
+# Install Keda features
+kubectl apply -f ../services/keda/keda-dash.yml
+kubectl apply -f ../services/keda/service_monitor.yml
+
 
 # Add metrics port to EKS ingress security group
 EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
