@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: debug
   labels:
-    app: nginx
+    app: debug
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: debug
   template:
     metadata:
       labels:
-        app: nginx
+        app: debug
     spec:
       containers:
-      - name: nginx
-        image: ubuntu:20.04
+      - name: debug
+        image: ubuntu:22.04
         command: ["tail", "-f", "/dev/null"]
