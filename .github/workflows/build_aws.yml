@@ -5,7 +5,6 @@ on:
       - github-actions-aws
 
 env:
-  # Name of services
   TF_VAR_name=gitops-playground
   CERTBOT_EMAIL="drogers@chariotsolutions.com"
   TF_VAR_region=us-east-1
