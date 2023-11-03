@@ -48,4 +48,3 @@ jobs:
       - name: AWS Up
         run: ./aws-down.sh
         working-directory: aws-infra
-
