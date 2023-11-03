@@ -1,6 +1,11 @@
 #!/bin/bash
 
-source .env
+# Grab Azure env variables
+if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
+  echo "Using Actions ENVs"
+else
+  source .env
+fi
 
 # Remove LB
 echo "Destroying Load Balancer..."
@@ -16,4 +21,10 @@ aws ec2 revoke-security-group-ingress --group-id $NODE_SG --protocol tcp --port 
 echo "------------"
 echo "We are about to run terraform destroy. Make sure you are running this script in the gitops-playground/aws-infra directory."
 sleep 10
-terraform destroy
+
+# Grab Azure env variables
+if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
+  terraform destroy -auto-approve
+else
+  terraform destroy
+fi
