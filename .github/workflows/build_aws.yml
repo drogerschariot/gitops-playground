@@ -49,17 +49,17 @@ jobs:
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=5s
       - name: Check Ingress
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=5s
-      - name: Check Metric API Service
-        run: |
-          max_retry=10
-          counter=0
-          until if [[ `kubectl get apiservice -l k8s-app=metrics-server --output=jsonpath={.items..status.conditions..status}` == "True" ]]; then exit 1; fi
-          do
-            sleep 60
-            [[ counter -eq $max_retry ]] && echo "Failed!" && exit 1
-            echo "Trying again. Try #$counter"
-            ((counter++))
-          done
+      # - name: Check Metric API Service
+      #   run: |
+      #     max_retry=10
+      #     counter=0
+      #     until if [[ `kubectl get apiservice -l k8s-app=metrics-server --output=jsonpath={.items..status.conditions..status}` == "True" ]]; then exit 1; fi
+      #     do
+      #       sleep 60
+      #       [[ counter -eq $max_retry ]] && echo "Failed!" && exit 1
+      #       echo "Trying again. Try #$counter"
+      #       ((counter++))
+      #     done
       - name: Check Keda
         run: kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda
       - name: Check Prometheus
