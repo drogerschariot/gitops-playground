@@ -2,7 +2,7 @@ name: AWS Up
 on: 
   push:
     branches:
-      - github-actions-aws
+      - main
 
 env:
   TF_VAR_name: gitops-playground
