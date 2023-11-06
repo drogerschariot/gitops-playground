@@ -21,5 +21,5 @@ runs:
       run: sudo apt -y update && sudo apt install -y azure-cli
       shell: bash
     - name: ACR Login
-      run: az login --service-principal --username ${{inputs.mq_acr_user}} --password ${{inputs.acr_password}} --tenant ${{inputs.mq_aks_tenant_id}}
+      run: az login --username ${{inputs.mq_acr_user}} --password ${{inputs.acr_password}} --tenant ${{inputs.mq_aks_tenant_id}}
       shell: bash
