@@ -14,6 +14,7 @@ data "azurerm_subscription" "primary" {
 
 provider "azurerm" {
   features {}
+  use_oidc = true
 }
 
 resource "azurerm_resource_group" "rg" {
