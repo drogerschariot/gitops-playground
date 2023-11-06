@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - github-actions-azure
+permissions:
+  id-token: write
+  contents: read
 
 env:
   TF_VAR_name: gitops-playground
