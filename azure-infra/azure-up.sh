@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Grab Azure env variables
-source .env
+# Grab Azure env variables
+if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
+  echo "Using Actions ENVs"
+else
+  source .env
+fi
 
 echo "Running Terraform..."
 terraform init
