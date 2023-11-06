@@ -1,0 +1,73 @@
+name: AWS Up
+on: 
+  push:
+    branches:
+      - main
+
+env:
+  TF_VAR_name: gitops-playground
+  CERTBOT_EMAIL: "drogers@chariotsolutions.com"
+  TF_VAR_region: us-east-1
+  TF_VAR_node_type: t3.medium
+  TF_VAR_node_size: 2
+  TF_VAR_cluster_version: 1.28
+  TF_VAR_k8s_version: 19.0.4
+  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ID}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_KEY}}
+  AWS_DEFAULT_REGION: us-east-1
+  IS_GITHUB_ACTIONS: "True"
+
+jobs:
+  aws_up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+      - name: install terraform
+        run: |
+          wget -O- https://apt.releases.hashicorp.com/gpg | \
+          gpg --dearmor | \
+          sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+          https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+          sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update
+          sudo apt-get -y install terraform
+      - name: Install kubectl
+        run: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod +x ./kubectl
+      - name: AWS Up
+        run: ./aws-up.sh
+        working-directory: aws-infra
+      - name: sleep
+        run: sleep 60
+      - name: Check ArgoCD
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=5s
+      - name: Check Ingress
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=5s
+      # - name: Check Metric API Service
+      #   run: |
+      #     max_retry=10
+      #     counter=0
+      #     until if [[ `kubectl get apiservice -l k8s-app=metrics-server --output=jsonpath={.items..status.conditions..status}` == "True" ]]; then exit 1; fi
+      #     do
+      #       sleep 60
+      #       [[ counter -eq $max_retry ]] && echo "Failed!" && exit 1
+      #       echo "Trying again. Try #$counter"
+      #       ((counter++))
+      #     done
+      - name: Check Keda
+        run: kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda
+      - name: Check Prometheus
+        run: kubectl wait --for=condition=ready pod -l app=kube-prometheus-stack-operator --namespace monitoring
+      - name: Check Cert Manager
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager
+      - name: AWS Down
+        if: always()
+        run: ./aws-down.sh
+        working-directory: aws-infra
+
