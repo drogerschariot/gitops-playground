@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "ID is $ARM_CLIENT_ID"
-echo "TEN is $ARM_TENANT_ID"
-
 # Grab Azure env variables
 if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
   echo "Using Actions ENVs"
