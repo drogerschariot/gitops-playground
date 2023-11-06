@@ -12,6 +12,11 @@ env:
   TF_VAR_ssh_pub_key: ${{secrets.SSH_PUB}}
   CERTBOT_EMAIL: "drogers@chariotsolutions.com"
   IS_GITHUB_ACTIONS: "True"
+  ARM_CLIENT_ID: ${{secrets.ARM_CLIENT_ID}}
+  ARM_CLIENT_CERTIFICATE: ${{secrets.ARM_CLIENT_CERTIFICATE}}
+  ARM_CLIENT_CERTIFICATE_PASSWORD: ${{secrets.ARM_CLIENT_CERTIFICATE_PASSWORD}}
+  ARM_TENANT_ID: ${{secrets.ARM_TENANT_ID}}
+  ARM_SUBSCRIPTION_ID: ${{secrets.ARM_SUBSCRIPTION_ID}}
 
 jobs:
   azure_up:
