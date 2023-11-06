@@ -1,8 +1,9 @@
 # gitops-playground
 
 ![AWS UP](https://github.com/drogerschariot/gitops-playground/actions/workflows/build_aws.yml/badge.svg)
+![Azure UP](https://github.com/drogerschariot/gitops-playground/actions/workflows/build_azure.yml/badge.svg)
 
-Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services, etc in a real world kubernetes environment. Base script will install:
+Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services, etc in a real world kubernetes sandbox environment. Base script will install kubernetes and:
 - [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)
 - [Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
 - [Prometheus with Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)

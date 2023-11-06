@@ -1,0 +1,65 @@
+name: Azure Up
+on: 
+  push:
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TF_VAR_name: gitops-playground
+  TF_VAR_k8s_version: 1.27.3
+  TF_VAR_location: eastus
+  TF_VAR_node_size: standard_d2ads_v5
+  TF_VAR_ssh_pub_key: ${{secrets.SSH_PUB}}
+  CERTBOT_EMAIL: "drogers@chariotsolutions.com"
+  IS_GITHUB_ACTIONS: "True"
+  ARM_CLIENT_ID: "${{secrets.ARM_CLIENT_ID}}"
+  ARM_TENANT_ID: "${{secrets.ARM_TENANT_ID}}"
+  ARM_SUBSCRIPTION_ID: "${{secrets.ARM_SUBSCRIPTION_ID}}"
+
+jobs:
+  azure_up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.ARM_CLIENT_ID }}
+            tenant-id: ${{ secrets.ARM_TENANT_ID }}
+            subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      - name: install terraform
+        run: |
+          wget -O- https://apt.releases.hashicorp.com/gpg | \
+          gpg --dearmor | \
+          sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+          https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+          sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update
+          sudo apt-get -y install terraform
+      - name: Install kubectl
+        run: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod +x ./kubectl
+      - name: Azure Up
+        run: ./azure-up.sh
+        working-directory: azure-infra
+      - name: sleep
+        run: sleep 60
+      - name: Check ArgoCD
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=5s
+      - name: Check Ingress
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=5s
+      - name: Check Keda
+        run: kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda
+      - name: Check Prometheus
+        run: kubectl wait --for=condition=ready pod -l app=kube-prometheus-stack-operator --namespace monitoring
+      - name: Check Cert Manager
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager
+      - name: Azure Down
+        if: always()
+        run: ./azure-down.sh
+        working-directory: azure-infra
+

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0.2"
+      version = "=3.7.0"
     }
   }
 
@@ -14,6 +14,7 @@ data "azurerm_subscription" "primary" {
 
 provider "azurerm" {
   features {}
+  use_oidc = true
 }
 
 resource "azurerm_resource_group" "rg" {
