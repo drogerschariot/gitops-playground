@@ -59,6 +59,7 @@ After you install the script, the kubernetes context will be automatically insta
 ## Services
 The following service are available to install and test. Click on the link to access install instructions.
 - [CloudNativePG](https://github.com/drogerschariot/gitops-playground/blob/main/services/cnpg/README.md)
+- [Redis/Redis Cluster](https://github.com/drogerschariot/gitops-playground/blob/main/services/redis/README.md)
 
 ## Teardown
 

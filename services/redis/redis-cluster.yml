@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-cluster
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+
+  source:
+    chart: redis-cluster
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 9.0.13
+    helm:
+      releaseName: redis-cluster
+      valuesObject:
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            namespace: monitoring
+        persistence:
+          enabled: true
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: default
