@@ -27,8 +27,13 @@ Redis is an open-source, in-memory data structure store that can be used as a da
 
 ## Access
 ```bash
+# redis
 $ kubectl get secret redis -o jsonpath='{.data.redis-password}' | base64 --decode
-$ kubectl port-forward svc/redis-master 6379:pgbouncer:6379
+$ kubectl port-forward svc/redis-master 6379:tcp-redis:6379
+
+# redis cluster
+$ kubectl get secret redis-cluster -o jsonpath='{.data.redis-password}' | base64 --decode
+$ kubectl port-forward svc/redis-cluster 6379:tcp-redis:6379
 ```
 
 ```bash
