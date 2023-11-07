@@ -132,3 +132,4 @@ jobs:
       - name: AWS Down
         if: always()
         run: ./aws-down.sh
+        working-directory: aws-infra

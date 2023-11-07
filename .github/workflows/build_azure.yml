@@ -58,10 +58,7 @@ jobs:
         run: kubectl wait --for=condition=ready pod -l app=kube-prometheus-stack-operator --namespace monitoring
       - name: Check Cert Manager
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cert-manager --namespace cert-manager
-      - name: Azure Down
-        if: always()
-        run: ./azure-down.sh
-        working-directory: azure-infra
+        
   service_cnpg:
     runs-on: ubuntu-latest
     needs: [azure_up]
