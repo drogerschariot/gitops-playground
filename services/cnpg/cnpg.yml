@@ -20,11 +20,12 @@ spec:
       auto_explain.log_min_duration: '10s'
 
   logLevel: debug
+  # Can can choose your clouds storage class here, or keep defaults.
   storage:
-    storageClass: gp3
+    #storageClass: gp3
     size: 100Gi
   walStorage:
-    storageClass: gp3
+    #storageClass: gp3
     size: 50Gi
 
   monitoring:
@@ -38,13 +39,14 @@ spec:
       memory: "1Gi"
       cpu: "2"
 
-  backup:
-    barmanObjectStore:
-      destinationPath: "s3://chariotsolutions-cnpg-backups/"
-      s3Credentials:
-        accessKeyId:
-          name: aws-creds
-          key: ACCESS_KEY_ID
-        secretAccessKey:
-          name: aws-creds
-          key: ACCESS_SECRET_KEY
+  # You can choose your clouds version for backing up to S3, or Azure Storage.
+  # backup:
+  #   barmanObjectStore:
+  #     destinationPath: "s3://chariotsolutions-cnpg-backups/"
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: aws-creds
+  #         key: ACCESS_KEY_ID
+  #       secretAccessKey:
+  #         name: aws-creds
+  #         key: ACCESS_SECRET_KEY
