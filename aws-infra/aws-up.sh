@@ -67,6 +67,8 @@ kubectl apply -f ../services/keda/service_monitor.yml
 
 # Add metrics port to EKS ingress security group
 EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
+echo "SG IS $EKS_SG"
 NODE_SG=`aws ec2 describe-instances --filter "Name=tag:eks:cluster-name,Values=$TF_VAR_name-eks" --query Reservations[*].Instances[*].NetworkInterfaces[0].Groups[0].GroupId --output text | tail -1`
+echo "NODE SG IS $NODE_SG"
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 6443 --source-group $EKS_SG
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 4443 --source-group $EKS_SG

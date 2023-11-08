@@ -81,6 +81,7 @@ jobs:
       - name: Install CNPG
         run: ./cnpg-up.sh
         working-directory: services/cnpg
+      - run: sleep 60
       - name: Check CNPG Operator
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=60s
       - name: Check CNPG Test Cluster
