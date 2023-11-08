@@ -12,6 +12,7 @@ env:
   TF_VAR_k8s_version: 1.27.3
   TF_VAR_location: eastus
   TF_VAR_node_size: standard_d2ads_v5
+  TF_VAR_node_count: 5
   TF_VAR_ssh_pub_key: ${{secrets.SSH_PUB}}
   CERTBOT_EMAIL: "drogers@chariotsolutions.com"
   IS_GITHUB_ACTIONS: "True"
@@ -49,9 +50,9 @@ jobs:
       - name: sleep
         run: sleep 60
       - name: Check ArgoCD
-        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=5s
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=120s
       - name: Check Ingress
-        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=5s
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=120s
       - name: Check Keda
         run: kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda
       - name: Check Prometheus

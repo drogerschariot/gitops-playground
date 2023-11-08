@@ -9,7 +9,7 @@ env:
   CERTBOT_EMAIL: "drogers@chariotsolutions.com"
   TF_VAR_region: us-east-1
   TF_VAR_node_type: t3.medium
-  TF_VAR_node_size: 2
+  TF_VAR_node_size: 5
   TF_VAR_cluster_version: 1.28
   TF_VAR_k8s_version: 19.0.4
   AWS_ACCESS_KEY_ID: ${{secrets.AWS_ID}}
@@ -46,9 +46,9 @@ jobs:
       - name: sleep
         run: sleep 60
       - name: Check ArgoCD
-        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=5s
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=120s
       - name: Check Ingress
-        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=5s
+        run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller --namespace ingress --timeout=120s
       - name: Check Keda
         run: kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda
       - name: Check Prometheus
