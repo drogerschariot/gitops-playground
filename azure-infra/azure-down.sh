@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Grab Azure env variables
 if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
   echo "Using Actions ENVs"
