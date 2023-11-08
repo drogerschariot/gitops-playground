@@ -85,7 +85,7 @@ jobs:
       - name: Check CNPG Operator
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=60s
       - name: Check CNPG Test Cluster
-        run: run: kubectl wait --for=condition=ready pod -l cnpg.io/podRole=instance --timeout=360s -n test-db
+        run: kubectl wait --for=condition=ready pod -l cnpg.io/podRole=instance --timeout=360s -n test-db
       - name: Remove Cluster
         run: kubectl delete -f cnpg.yml
         working-directory: services/cnpg
