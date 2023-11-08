@@ -85,9 +85,9 @@ jobs:
       - name: Check CNPG Operator
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=60s
       - name: Check CNPG Test Cluster
-        run: |
-          kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --timeout=360s -n test-db
-          kubectl wait --for=condition=ready pod -l role=primary --timeout=360s -n test-db
+        run: kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --timeout=360s -n test-db
+      - name: Remove Cluster
+        run: kubectl delete -f cnpg.yml
   service_redis:
     runs-on: ubuntu-latest
     needs: [aws_up]
@@ -111,8 +111,9 @@ jobs:
         working-directory: services/redis
       - name: Check Redis Master
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=master -n redis
+      - run: sleep 60
       - name: Check Redis Cluster
-        run: kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-master
+        run: kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-master --timeout=300s
   aws_down:
     if: always()
     runs-on: ubuntu-latest

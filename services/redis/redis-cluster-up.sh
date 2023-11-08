@@ -11,7 +11,7 @@ fi
 echo "Installing Redis Cluster"
 kubectl apply -f redis-cluster.yml
 sleep 30
-kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-cluster
+kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-cluster --timeout=300s
 sleep 30
 
 echo "Installing Redis Grafana Dashboard..."
