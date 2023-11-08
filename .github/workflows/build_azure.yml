@@ -92,6 +92,7 @@ jobs:
         run: kubectl wait --for=condition=ready pod -l cnpg.io/podRole=instance --timeout=360s -n test-db
       - name: Remove Cluster
         run: kubectl delete -f cnpg.yml
+        working-directory: services/cnpg
   service_redis:
     runs-on: ubuntu-latest
     needs: [azure_up]
