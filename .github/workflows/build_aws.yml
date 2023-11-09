@@ -40,6 +40,8 @@ jobs:
           sudo apt-get -y install terraform
       - name: Install kubectl
         run: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && chmod +x ./kubectl
+      - run: aws ec2 describe-instances --filter "Name=tag:eks:cluster-name,Values=$TF_VAR_name-eks" --query Reservations[*].Instances[*].NetworkInterfaces[0].Groups[0].GroupId --output text | tail -1 | cut -d " " -f 1`
+      - run: echo $NODE_SG
       - name: AWS Up
         run: ./aws-up.sh
         working-directory: aws-infra
