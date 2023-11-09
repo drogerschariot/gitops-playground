@@ -146,8 +146,7 @@ jobs:
         with:
           name: tfstate
           path: aws-infra/
-      - run: ls -la azure-infra/
+      - run: ls -la aws-infra/
       - name: AWS Down
-        if: always()
         run: ./aws-down.sh
         working-directory: aws-infra
