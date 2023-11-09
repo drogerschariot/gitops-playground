@@ -64,7 +64,7 @@ kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.stat
 kubectl apply -f ../services/keda/keda-dash.yml
 kubectl apply -f ../services/keda/service_monitor.yml
 
-
+set +e
 # Add metrics port to EKS ingress security group
 EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
 echo "SG IS $EKS_SG"
