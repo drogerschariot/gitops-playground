@@ -2,7 +2,7 @@ name: AWS Up
 on: 
   push:
     branches:
-      - add-services-to-gh
+      - main
 
 env:
   TF_VAR_name: gitops-actions
