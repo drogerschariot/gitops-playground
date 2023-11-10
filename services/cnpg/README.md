@@ -59,7 +59,7 @@ CloudnativePG metrics and dashboards are automatticly installed. You can access 
 ```bash
 kubectl port-forward deployment/kube-prometheus-stack-grafana 3000:3000 --namespace monitoring
 ```
-![CNPG Dashboard](img)
+![Screenshot-at-2023-10-24-11-42-22](https://github.com/drogerschariot/gitops-playground/assets/1655964/42e2009a-636f-470b-9686-dc259c6593ff)
 
 ## [Backup](https://cloudnative-pg.io/documentation/1.16/backup_recovery/)
 Included is an example of a [ScheduledBackup CRD](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml) `kubectl apply -f backup.yml`.
@@ -68,6 +68,7 @@ Included is an example of a [ScheduledBackup CRD](https://github.com/cloudnative
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
+
   name: backup-example
 spec:
   schedule: "0 */30 * * * *" # Every 30 minutes
