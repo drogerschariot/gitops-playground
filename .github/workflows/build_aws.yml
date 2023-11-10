@@ -114,7 +114,7 @@ jobs:
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=master -n redis
       - run: sleep 60
       - name: Check Redis Cluster
-        run: kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-master --timeout=300s
+        run: kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=redis-cluster-0 -n redis-cluster --timeout=300s
   aws_down:
     if: always()
     runs-on: ubuntu-latest
