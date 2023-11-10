@@ -1,7 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-db
+  labels:
+    name: test-db
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: test-db
+  namespace: test-db
 spec:
   description: "Test CNPG Database"
   instances: 3
@@ -20,11 +28,12 @@ spec:
       auto_explain.log_min_duration: '10s'
 
   logLevel: debug
+  # Can can choose your clouds storage class here, or keep defaults.
   storage:
-    storageClass: gp3
+    #storageClass: gp3
     size: 100Gi
   walStorage:
-    storageClass: gp3
+    #storageClass: gp3
     size: 50Gi
 
   monitoring:
@@ -33,18 +42,19 @@ spec:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "1"
+      cpu: "0.5"
     limits:
       memory: "1Gi"
-      cpu: "2"
+      cpu: "0.5"
 
-  backup:
-    barmanObjectStore:
-      destinationPath: "s3://chariotsolutions-cnpg-backups/"
-      s3Credentials:
-        accessKeyId:
-          name: aws-creds
-          key: ACCESS_KEY_ID
-        secretAccessKey:
-          name: aws-creds
-          key: ACCESS_SECRET_KEY
+  # You can choose your clouds version for backing up to S3, or Azure Storage.
+  # backup:
+  #   barmanObjectStore:
+  #     destinationPath: "s3://chariotsolutions-cnpg-backups/"
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: aws-creds
+  #         key: ACCESS_KEY_ID
+  #       secretAccessKey:
+  #         name: aws-creds
+  #         key: ACCESS_SECRET_KEY
