@@ -11,7 +11,7 @@ fi
 
 echo "Running Terraform..."
 terraform init
-terraform apply -auto-approve
+terraform apply -parallelism=1 -auto-approve
 
 echo "Fetching AKS creds for kubectl"
 aws eks update-kubeconfig --region $TF_VAR_region --name $TF_VAR_name-eks
