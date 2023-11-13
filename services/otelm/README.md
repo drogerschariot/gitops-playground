@@ -1,4 +1,5 @@
 # [OpenTelemetry](https://opentelemetry.io/)
+![opentelemetry-horizontal-color](https://github.com/drogerschariot/gitops-playground/assets/1655964/9b5ccded-e99b-420e-b77d-7aaee85f83d7)
 
 
 OpenTelemetry is an open-source observability framework designed to facilitate the instrumentation, collection, and analysis of distributed traces and metrics in software applications. It provides a standardized set of APIs, libraries, agents, and instrumentation to enable developers to gain insights into the performance and behavior of their applications across various services and components.
@@ -66,3 +67,11 @@ The Otelm project comes with a full fledged demo to showoff the features of Open
 - Feature Flags UI:	http://localhost:8080/feature
 - Load Generator UI:	http://localhost:8080/loadgen
 - Jaeger UI:	http://localhost:8080/jaeger/ui
+
+Monitoring:
+![Screenshot at 2023-11-12 18-56-14](https://github.com/drogerschariot/gitops-playground/assets/1655964/84eef5fe-b6eb-4309-8321-15b696e278f5)
+
+Jaeger:
+![Screenshot at 2023-11-12 18-57-02](https://github.com/drogerschariot/gitops-playground/assets/1655964/a4be7668-9c3c-4179-959d-c7e868607ef3)
+
+
