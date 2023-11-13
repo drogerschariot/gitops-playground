@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wordpress
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: wordpress
+    repoURL:  https://charts.bitnami.com/bitnami
+    targetRevision: 18.0.9
+    helm:
+      releaseName: wordpress
+      valuesObject:
+        wordpressBlogName: My Test Blog
+        wordpressUsername: admin
+        ingress:
+          selfSigned: true
+        replicaCount: 1
+        autoscaling:
+          enabled: true
+          minReplicas: 1
+          maxReplicas: 4
+          targetCPU: 60
+          targetMemory: 80
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            namespace: monitoring
+        networkPolicy:
+          metrics:
+            enabled: true
+        mariadb.enabled: true
+        persistence:
+          enabled: true
+          # Choose a shared filesystem like EFS if you would like to
+          # test multiple replicas. 
+          #storageClass: "efs-sc"
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: wordpress
