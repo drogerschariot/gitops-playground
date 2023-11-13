@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otelm-operator
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: opentelemetry-operator
+    repoURL:  https://open-telemetry.github.io/opentelemetry-helm-charts
+    targetRevision: 0.42.0
+    helm:
+      releaseName: opentelemetry-operator
+      valuesObject:
+        mode: daemonset
+        presets:
+          hostMetrics:
+            enabled: true
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: otelm-operator
