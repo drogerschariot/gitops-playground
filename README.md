@@ -61,6 +61,7 @@ The following service are available to install and test. Click on the link to ac
 - [CloudNativePG](https://github.com/drogerschariot/gitops-playground/blob/main/services/cnpg/README.md)
 - [Redis/Redis Cluster](https://github.com/drogerschariot/gitops-playground/blob/main/services/redis/README.md)
 - [OpenTelemetry/Otelm Demo](https://github.com/drogerschariot/gitops-playground/blob/main/services/otelm/README.md)
+- [Wordpress](https://github.com/drogerschariot/gitops-playground/blob/main/services/wordpress/README.md)
 
 ## Teardown
 

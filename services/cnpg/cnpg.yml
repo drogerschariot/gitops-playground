@@ -12,7 +12,7 @@ metadata:
   namespace: test-db
 spec:
   description: "Test CNPG Database"
-  instances: 3
+  instances: 2
 
   replicationSlots:
     highAvailability:
