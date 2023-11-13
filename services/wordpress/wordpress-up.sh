@@ -11,8 +11,8 @@ fi
 echo "Installing Wordpress"
 kubectl apply -f wordpress.yml
 sleep 30
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=mariadb -n wordpress
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=wordpress -n wordpress
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=mariadb -n wordpress --timeout=300s 
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=wordpress -n wordpress --timeout=300s
 sleep 30
 
 echo "-----------------"
