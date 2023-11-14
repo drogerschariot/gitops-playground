@@ -176,6 +176,7 @@ jobs:
       - name: Check Wordpress
         run: kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=wordpress -n wordpress --timeout=300s
       - name: Delete namespace
+        run: kubectl delete namespace wordpress
   azure_down:
     if: always()
     runs-on: ubuntu-latest
