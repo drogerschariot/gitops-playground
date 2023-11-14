@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - fix-ga
+      - main
+
 permissions:
   id-token: write
   contents: read

@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - fix-ga
+      - main
 
 env:
   TF_VAR_name: gitops-actions
