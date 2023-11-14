@@ -11,12 +11,12 @@ fi
 echo "Installing CNPG"
 kubectl apply -f ../../argocd/argocd/cnpg.yml
 sleep 30
-kubectl -n cnpg-system wait --for condition=established --timeout=60s crd/clusters.postgresql.cnpg.io
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=60s
+kubectl -n cnpg-system wait --for condition=established crd/clusters.postgresql.cnpg.io --timeout=300s
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg --namespace cnpg-system --timeout=300s
 echo "Installing test cluster"
 kubectl apply -f cnpg.yml
 sleep 30
 
-for i in {1..10}; do kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --namespace test-db && break || echo "Waiting for Cluster to start..."; sleep 30; done
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --namespace test-db --timeout=300s && break || echo "Waiting for Cluster to start..."; sleep 30; done
 echo "Installing DNPG Grafana Dashboard..."
 kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/docs/src/samples/monitoring/grafana-configmap.yaml --namespace monitoring

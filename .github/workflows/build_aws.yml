@@ -2,7 +2,7 @@ name: AWS Up
 on: 
   push:
     branches:
-      - main
+      - fix-ga
 
 env:
   TF_VAR_name: gitops-actions
