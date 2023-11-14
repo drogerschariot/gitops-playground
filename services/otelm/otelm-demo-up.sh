@@ -11,8 +11,8 @@ fi
 echo "Installing Otelm Demo"
 kubectl apply -f otelm-demo.yml
 sleep 30
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=opentelemetry-demo-frontend -n otelm-demo
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n otelm-demo
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=otelcol -n otelm-demo
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=opentelemetry-demo-frontend -n otelm-demo --timeout=300s
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n otelm-demo --timeout=300s
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=otelcol -n otelm-demo --timeout=300s
 sleep 30
 

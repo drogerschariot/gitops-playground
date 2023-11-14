@@ -2,6 +2,7 @@ name: AWS Up
 on: 
   push:
     branches:
+      - fix-ga
       - main
 
 env:
