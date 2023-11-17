@@ -10,7 +10,7 @@ fi
 
 echo "Installing Otelm"
 kubectl apply -f otelm.yml
-sleep 30
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=opentelemetry-operator -n otelm-operator --timeout=300s
-sleep 30
+sleep 60
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=opentelemetry-operator -n otelm-operator --timeout=600s
+sleep 60
 
