@@ -10,9 +10,9 @@ fi
 
 echo "Installing Redis"
 kubectl apply -f redis.yml
-sleep 30
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=master -n redis --timeout=300s
-sleep 30
+sleep 60
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=master -n redis --timeout=600s
+sleep 60
 
 echo "Installing Redis Grafana Dashboard..."
 kubectl apply -f redis-dash.yml

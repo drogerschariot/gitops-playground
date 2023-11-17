@@ -10,10 +10,10 @@ fi
 
 echo "Installing Wordpress"
 kubectl apply -f wordpress.yml
-sleep 30
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=mariadb -n wordpress --timeout=300s 
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=wordpress -n wordpress --timeout=300s
-sleep 30
+sleep 60
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=mariadb -n wordpress --timeout=600s 
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=wordpress -n wordpress --timeout=600s
+sleep 60
 
 echo "-----------------"
 echo "Wordpress Username: admin"
