@@ -39,7 +39,6 @@ metadata:
 ```
 
 #### Create Vault policy
-Create a policy:
 ```bash
 $ kubectl -n vault cp policy.hcp vault-0:/home/vault
 $ kubectl -n vault exec -it vault-0 -- vault policy write injector-policy /home/vault/policy.hcp
