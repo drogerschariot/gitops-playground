@@ -55,8 +55,13 @@ for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=keda-operator
 kubectl apply -f ../services/keda/keda-dash.yml
 kubectl apply -f ../services/keda/service_monitor.yml
 
-echo "-----------------"
+echo "\n\n-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 echo "Ingress public IP"
 kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+echo ""
+
+# Install Vault and Consul
+cd ../services/vault/
+./vault-up.sh 
