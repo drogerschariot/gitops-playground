@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: vault
+    repoURL:  https://helm.releases.hashicorp.com
+    targetRevision: 0.27.0
+    helm:
+      releaseName: vault
+      valuesObject:
+        global:
+          enabled: true
+          tlsDisable: false
+          serverTelemetry:
+            prometheusOperator: true
+        injector:
+          enabled: true
+        server:
+          enabled: true
+          readinessProbe:
+            enabled: true
+            path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+          livenessProbe:
+            enabled: true
+            path: "/v1/sys/health?standbyok=true"
+            initialDelaySeconds: 60
+          extraEnvironmentVars:
+            VAULT_CACERT: /vault/userconfig/tls-ca/tls.crt
+          extraVolumes:
+            - type: secret
+              name: tls-server
+            - type: secret
+              name: tls-ca
+          standalone:
+            enabled: false
+          ha:
+            enabled: true
+            replicas: 2
+            config: |
+              ui = true
+              
+              listener "tcp" {
+                tls_disable = 0
+                address     = "0.0.0.0:8200"
+                tls_cert_file = "/vault/userconfig/tls-server/tls.crt"
+                tls_key_file = "/vault/userconfig/tls-server/tls.key"
+                tls_min_version = "tls12"
+              }
+
+              telemetry {
+                prometheus_retention_time = "30s"
+                disable_hostname = true
+              }
+
+              storage "consul" {
+                path = "vault"
+                address = "consul-consul-server:8500"
+              }
+        ui:
+          enabled: true
+          externalPort: 8200
+        serverTelemetry:
+          serviceMonitor: 
+            enabled: true
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: vault

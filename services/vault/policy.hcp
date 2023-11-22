@@ -1,0 +1,3 @@
+path "secret/too-many-secrets/*" {
+  capabilities = ["read"]
+}

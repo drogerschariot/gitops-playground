@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-injector
+  labels:
+    app: test-injector
+spec:
+  selector:
+    matchLabels:
+      app: test-injector
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/tls-skip-verify: "true"
+        vault.hashicorp.com/agent-inject-secret-fake_token: "secret/too-many-secrets/fake_token"
+        vault.hashicorp.com/agent-inject-template-fake_token: |
+          {{- with secret "secret/too-many-secrets/fake_token" -}}
+          {
+            "token" : "{{ .Data.token }}"
+          }
+          {{- end }}
+        vault.hashicorp.com/role: demo-injector
+      labels:
+        app: test-injector
+    spec:
+      serviceAccountName: injector-sa
+      containers:
+      - name: test-injector
+        image: nginx:1.25.3-alpine

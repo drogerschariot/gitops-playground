@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: consul
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: consul
+    repoURL:  https://helm.releases.hashicorp.com
+    targetRevision: 1.3.0
+    helm:
+      releaseName: consul
+      valuesObject:
+        global:
+          datacenter: vault-kubernetes-guide
+
+        client:
+          enabled: true
+
+        server:
+          replicas: 1
+          bootstrapExpect: 1
+          disruptionBudget:
+            maxUnavailable: 0
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: vault

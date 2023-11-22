@@ -10,6 +10,8 @@ Spin up a K8s cluster in AWS or Azure for testing ArgoCD Applications, services,
 - [Cert Manager](https://cert-manager.io/)
 - [Keda](https://keda.sh/)
 - [K8s Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
+- [Hashicorp Vault with injector](https://www.vaultproject.io/)
+- [Hashicorp Consul](https://www.consul.io/)
 
 ## AWS
 
@@ -62,6 +64,7 @@ The following service are available to install and test. Click on the link to ac
 - [Redis/Redis Cluster](https://github.com/drogerschariot/gitops-playground/blob/main/services/redis/README.md)
 - [OpenTelemetry/Otelm Demo](https://github.com/drogerschariot/gitops-playground/blob/main/services/otelm/README.md)
 - [Wordpress](https://github.com/drogerschariot/gitops-playground/blob/main/services/wordpress/README.md)
+- [Vault](https://github.com/drogerschariot/gitops-playground/blob/main/services/vault/README.md)
 
 ## Teardown
 

@@ -53,7 +53,6 @@ for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=kube-promethe
 echo "Waiting for Keda"
 for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda --timeout=240s && break || echo "Waiting for Keda..."; sleep 30; done
 
-
 echo "-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
@@ -65,10 +64,13 @@ kubectl apply -f ../services/keda/keda-dash.yml
 kubectl apply -f ../services/keda/service_monitor.yml
 
 set +e
-# Add metrics port to EKS ingress security group
+# Add metrics and Vault injector ports to EKS ingress security group
 EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
-echo "SG IS $EKS_SG"
 NODE_SG=`aws ec2 describe-instances --filter "Name=tag:eks:cluster-name,Values=$TF_VAR_name-eks" --query Reservations[*].Instances[*].NetworkInterfaces[0].Groups[0].GroupId --output text | head -n1 | awk '{print $1;}'`
-echo "NODE SG IS $NODE_SG"
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 6443 --source-group $EKS_SG
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 4443 --source-group $EKS_SG
+aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 8080 --source-group $EKS_SG
+
+# Install Vault and Consul
+cd ../services/vault/
+./vault-up.sh
