@@ -38,7 +38,7 @@ echo "Installing Vault..."
 kubectl apply -f vault.yml
 sleep 60
 
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --namespace vault --timeout=600s
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault --namespace vault --timeout=600s && break || echo "Waiting for Vault..."; sleep 30; done
 
 echo -e "\n\n Unsealing Vault..."
 kubectl -n vault exec -it vault-0 -- vault operator init > vault.creds
