@@ -106,10 +106,10 @@ kubectl cnpg pgbench test-db --job-name bench-test2 --db-name app -- --initializ
 ```
 
 ## PGAdmin
-![scale-out-postgresql-distributed-sql-pgadmin-00](https://github.com/drogerschariot/gitops-playground/assets/1655964/07a746eb-2913-4194-968d-09eb17ce5975)
-
 If you would like to use [PGAdmin](https://www.pgadmin.org/) run:
 ```bash
 kubectl apply -f pgadmin.yml
 kubectl -n test-db port-forward pod/vault-ui 8200:80
 ```
+![scale-out-postgresql-distributed-sql-pgadmin-00](https://github.com/drogerschariot/gitops-playground/assets/1655964/07a746eb-2913-4194-968d-09eb17ce5975)
+
