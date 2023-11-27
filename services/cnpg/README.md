@@ -104,3 +104,10 @@ You can run pgbench using the cnpg kubectl plugin:
 ```bash
 kubectl cnpg pgbench test-db --job-name bench-test2 --db-name app -- --initialize --scale 300
 ```
+
+## PGAdmin
+If you would like to use [PGAdmin](https://www.pgadmin.org/) run:
+```bash
+kubectl apply -f pgadmin.yml
+kubectl -n test-db port-forward pod/vault-ui 8200:80
+```
