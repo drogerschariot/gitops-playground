@@ -149,6 +149,23 @@ resource "aws_iam_role_policy" "node_policy" {
 POLICY
 }
 
+resource "aws_iam_role_policy" "node_pod_identity_policy" {
+  role = aws_iam_role.node_role.name
+
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["eks-auth:AssumeRoleForPodIdentity"],
+            "Resource": "*"
+        }
+    ]
+}
+POLICY
+}
+
 resource "aws_iam_role_policy_attachment" "nodes_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node_role.name
@@ -207,6 +224,16 @@ resource "aws_eks_addon" "csi_driver" {
   addon_name               = "aws-ebs-csi-driver"
   addon_version            = "v1.24.0-eksbuild.1"
   service_account_role_arn = aws_iam_role.eks_ebs_csi_driver.arn
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "aws_eks_addon" "eks_pod_identity_agent" {
+  cluster_name             = module.eks.cluster_name
+  addon_name               = "eks-pod-identity-agent"
+  addon_version            = "v1.0.0-eksbuild.1"
 
   depends_on = [
     module.eks
