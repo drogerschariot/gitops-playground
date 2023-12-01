@@ -16,7 +16,6 @@ spec:
     spec:
       serviceAccountName: pod-identity
       containers:
-      - name: pod-identity
         image: makoreactor/debug:latest
 ---
 apiVersion: v1
@@ -25,3 +24,4 @@ metadata:
   name: pod-identity
   labels:
     app: pod-identity
+
