@@ -57,6 +57,7 @@ After you install the script, the kubernetes context will be automatically insta
 - ArgoCD (http://localhost:8080/): `kubectl port-forward deployment/argocd-server 8080:8080 --namespace argocd`
 - Grafana (http://localhost:3000/): `kubectl port-forward deployment/kube-prometheus-stack-grafana 3000:3000 --namespace monitoring`
 - Prometheus: (http://localhost:9090): `kubectl port-forward svc/kube-prometheus-stack-prometheus 9090:http-web --namespace monitoring`
+- Vault UI: (http://localhost:8200): `kubectl port-forward svc/vault-ui 8200:8200 --namespace vault`
 
 ## Services
 The following service are available to install and test. Click on the link to access install instructions.
@@ -65,6 +66,7 @@ The following service are available to install and test. Click on the link to ac
 - [OpenTelemetry/Otelm Demo](https://github.com/drogerschariot/gitops-playground/blob/main/services/otelm/README.md)
 - [Wordpress](https://github.com/drogerschariot/gitops-playground/blob/main/services/wordpress/README.md)
 - [Vault](https://github.com/drogerschariot/gitops-playground/blob/main/services/vault/README.md)
+- [JFrog Artifactory](https://github.com/drogerschariot/gitops-playground/blob/main/services/jfrog/README.md)
 
 ## Teardown
 
