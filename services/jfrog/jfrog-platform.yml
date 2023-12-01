@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jfrog-platform
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: jfrog-platform
+    repoURL: https://charts.jfrog.io/jfrog
+    targetRevision: 10.16.2
+    helm:
+      releaseName: jfrog-platform
+      #valuesObject:
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: jfrog-platform
