@@ -70,7 +70,7 @@ do
 done
 
 # Enable kubernetes auth
-kubectl wait --for=condition=ready pod -l component=server --namespace vault --timeout=240s
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l component=server --namespace vault --timeout=600s && break || echo "Waiting for Vault..."; sleep 30; done
 echo "Waiting for clients to unseal..."
 sleep 60 # wait for clients to unseal
 kubectl -n vault exec -it vault-0 -- vault login $root_token
