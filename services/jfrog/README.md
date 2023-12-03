@@ -1,4 +1,5 @@
-# [Vault](https://www.vaultproject.io/)
+# [JFrog Artifactory](https://jfrog.com/artifactory)
+![0_uKzO4D11MaARkJG7](https://github.com/drogerschariot/gitops-playground/assets/1655964/9e5b949f-3ca2-488d-b49a-a0a8261e2be5)
 
 
 JFrog Artifactory is a universal artifact repository manager that facilitates the storage, organization, and distribution of software artifacts. It provides a central hub for managing and securing artifacts across different development and deployment environments, supporting a wide range of technologies and integrations in the software development lifecycle.
