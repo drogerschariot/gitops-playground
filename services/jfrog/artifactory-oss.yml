@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: artifactory-oss
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: artifactory-oss
+    repoURL: https://charts.jfrog.io/jfrog
+    targetRevision: 107.71.5
+    helm:
+      releaseName: artifactory-oss
+      #valuesObject:
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: artifactory-oss
