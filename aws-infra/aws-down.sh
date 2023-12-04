@@ -32,3 +32,8 @@ if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
 else
   terraform destroy
 fi
+
+for i in `aws ec2 describe-volumes --filters "Name=tag:Name,Values=$TF_VAR_name*" --query "Volumes[*].{ID:VolumeId}" --output text` 
+do
+  aws ec2 delete-volume --volume-id $i
+done
