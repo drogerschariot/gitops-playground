@@ -12,6 +12,10 @@ echo "Installing Elasticsearch"
 kubectl apply -f elastic-stack.yml
 sleep 60
 
-for i in {1..10}; do kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --namespace test-db --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
-echo "Installing DNPG Grafana Dashboard..."
-kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/docs/src/samples/monitoring/grafana-configmap.yaml --namespace monitoring
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=elasticsearch-data-0 --namespace elasticsearch --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=elasticsearch-master-0 --namespace elasticsearch --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l statefulset.kubernetes.io/pod-name=elasticsearch-ingest-0 --namespace elasticsearch --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=metrics --namespace elasticsearch --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+
+echo "Installing Elasticsearch Grafana Dashboard..."
+kubectl apply -f es-dashboard.yml
