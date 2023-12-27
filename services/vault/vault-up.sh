@@ -11,8 +11,14 @@ sleep 30
 
 echo "Installing and bootstrapping Vault..." 
 # Install CF SSL
-curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssl_1.6.1_linux_amd64 -o ./cfssl && \
-curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssljson_1.6.1_linux_amd64 -o ./cfssljson && \
+if [[ `uname -m` == "arm64" ]] # Check Apple Silicon
+then
+  curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssl_1.6.1_darwin_amd64 -o ./cfssl && \
+  curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssljson_1.6.1_darwin_amd64 -o ./cfssljson
+else
+  curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssl_1.6.1_linux_amd64 -o ./cfssl && \
+  curl -L https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssljson_1.6.1_linux_amd64 -o ./cfssljson
+fi
 chmod +x ./cfssl && \
 chmod +x ./cfssljson
 

@@ -1,0 +1,190 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elasticsearch
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: elasticsearch
+    repoURL:  https://charts.bitnami.com/bitnami
+    targetRevision: 19.13.14
+    helm:
+      releaseName: elasticsearch
+      valuesObject:
+        global:
+          kibanaEnabled: true
+        clusterName: "elasticsearch-test"
+
+        roles:
+          - master
+          - data
+          - data_content
+          - data_hot
+          - data_warm
+          - data_cold
+          - ingest
+          - ml
+          - remote_cluster_client
+          - transform
+
+        replicas: 3
+        minimumMasterNodes: 2
+        createCert: true
+
+        esJvmOptions: {}
+
+        secret:
+          enabled: true
+          password: ""
+
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "1Gi"
+          limits:
+            cpu: "250m"
+            memory: "1Gi"
+
+        networkHost: "0.0.0.0"
+
+        volumeClaimTemplate:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 30Gi
+
+        rbac:
+          create: false
+          serviceAccountAnnotations: {}
+          serviceAccountName: ""
+          automountToken: true
+
+        podSecurityPolicy:
+          create: false
+          name: ""
+          spec:
+            privileged: true
+            fsGroup:
+              rule: RunAsAny
+            runAsUser:
+              rule: RunAsAny
+            seLinux:
+              rule: RunAsAny
+            supplementalGroups:
+              rule: RunAsAny
+            volumes:
+              - secret
+              - configMap
+              - persistentVolumeClaim
+              - emptyDir
+
+        persistence:
+          enabled: true
+          labels:
+            # Add default labels for the volumeClaimTemplate of the StatefulSet
+            enabled: false
+          annotations: {}
+
+        priorityClassName: ""
+        antiAffinityTopologyKey: "kubernetes.io/hostname"
+        antiAffinity: "hard"
+        nodeAffinity: {}
+        podManagementPolicy: "Parallel"
+        enableServiceLinks: true
+
+        protocol: https
+        httpPort: 9200
+        transportPort: 9300
+
+        service:
+          enabled: true
+          labels: {}
+          labelsHeadless: {}
+          type: ClusterIP
+          publishNotReadyAddresses: false
+          nodePort: ""
+          annotations: {}
+          httpPortName: http
+          transportPortName: transport
+          loadBalancerIP: ""
+          loadBalancerSourceRanges: []
+          externalTrafficPolicy: ""
+
+        updateStrategy: RollingUpdate
+
+        maxUnavailable: 1
+
+        podSecurityContext:
+          fsGroup: 1000
+          runAsUser: 1000
+
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+
+        terminationGracePeriod: 120
+
+        sysctlVmMaxMapCount: 262144
+
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 3
+          timeoutSeconds: 5
+
+        clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
+
+        schedulerName: ""
+
+        ingress:
+          enabled: false
+          annotations: {}
+          # kubernetes.io/ingress.class: nginx
+          # kubernetes.io/tls-acme: "true"
+          className: "nginx"
+          pathtype: ImplementationSpecific
+          hosts:
+            - host: chart-example.local
+              paths:
+                - path: /
+          tls: []
+          #  - secretName: chart-example-tls
+          #    hosts:
+          #      - chart-example.local
+
+        nameOverride: ""
+        fullnameOverride: ""
+        healthNameOverride: ""
+
+        lifecycle: {}
+
+        sysctlInitContainer:
+          enabled: true
+
+        keystore: []
+
+        networkPolicy:
+          http:
+            enabled: false
+
+          transport:
+            enabled: false
+
+        tests:
+          enabled: true
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: elasticsearch

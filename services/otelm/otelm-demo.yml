@@ -12,7 +12,6 @@ spec:
       prune: true
       allowEmpty: true
   source:
-  source:
     chart: opentelemetry-demo
     repoURL:  https://open-telemetry.github.io/opentelemetry-helm-charts
     targetRevision: 0.26.0
