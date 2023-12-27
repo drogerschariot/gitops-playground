@@ -21,6 +21,60 @@ spec:
         global:
           kibanaEnabled: true
         clusterName: "elasticsearch-test"
+        metrics:
+          enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/elasticsearch-exporter
+            tag: 1.6.0-debian-11-r97
+            digest: ""
+            pullPolicy: IfNotPresent
+          annotations:
+            helm.sh/hook: "post-install,post-upgrade"
+            helm.sh/hook-weight: "5"
+          service:
+            type: ClusterIP
+            port: 9114
+            annotations:
+              prometheus.io/scrape: "true"
+              prometheus.io/port: "9114"
+          livenessProbe:
+            enabled: true
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            enabled: true
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
+          startupProbe:
+            enabled: false
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
+          podAnnotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "9114"
+          podSecurityContext:
+            enabled: true
+            fsGroup: 1001
+          containerSecurityContext:
+            enabled: true
+            runAsUser: 1001
+            runAsNonRoot: true
+          serviceMonitor:
+            enabled: true
+            namespace: "monitoring"
+          # prometheusRule:
+          #   enabled: false
+          #   namespace: ""
 
         roles:
           - master

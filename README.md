@@ -67,6 +67,7 @@ The following services are available to install and test. Click on the link to a
 - [Wordpress](https://github.com/drogerschariot/gitops-playground/blob/main/services/wordpress/README.md)
 - [Vault](https://github.com/drogerschariot/gitops-playground/blob/main/services/vault/README.md)
 - [JFrog Artifactory](https://github.com/drogerschariot/gitops-playground/blob/main/services/jfrog/README.md)
+- [Elasticsearch](https://github.com/drogerschariot/gitops-playground/blob/main/services/elasticsearch/README.md)
 
 ## Teardown
 
