@@ -60,7 +60,7 @@ After you install the script, the kubernetes context will be automatically insta
 - Vault UI: (http://localhost:8200): `kubectl port-forward svc/vault-ui 8200:8200 --namespace vault`
 
 ## Services
-The following services are available to install and test. Click on the link service README.
+The following services are available to install and test. Click on the link to access service README.
 - [CloudNativePG](https://github.com/drogerschariot/gitops-playground/blob/main/services/cnpg/README.md)
 - [Redis/Redis Cluster](https://github.com/drogerschariot/gitops-playground/blob/main/services/redis/README.md)
 - [OpenTelemetry/Otelm Demo](https://github.com/drogerschariot/gitops-playground/blob/main/services/otelm/README.md)
