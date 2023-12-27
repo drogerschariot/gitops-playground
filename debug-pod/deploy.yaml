@@ -16,6 +16,7 @@ spec:
     spec:
       serviceAccountName: pod-identity
       containers:
+      - name: debug
         image: makoreactor/debug:latest
 ---
 apiVersion: v1

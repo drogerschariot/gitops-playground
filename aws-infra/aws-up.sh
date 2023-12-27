@@ -2,20 +2,23 @@
 
 set -e
 
-# Grab Azure env variables
+# Grab AWS env variables
 if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
   echo "Using Actions ENVs"
 else
   source .env
 fi
 
+# Build Infra
 echo "Running Terraform..."
 terraform init
 terraform apply -parallelism=1 -auto-approve
 
+# Update .kube/config context
 echo "Fetching AKS creds for kubectl"
 aws eks update-kubeconfig --region $TF_VAR_region --name $TF_VAR_name-eks
 
+# Install ArgoCD
 echo "Installing ArgoCD"
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
@@ -31,13 +34,14 @@ kubectl patch deploy argocd-server --namespace argocd --type='json' \
 ]}]'
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server --namespace argocd --timeout=240s
 
+# Install Argo Applications
 echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications, Keda"
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/keda.yml --namespace argocd
 
-#AWS Only
+#AWS Only - enable metric server
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 sleep 30 #wait for ArgoCD to create namespace
 
@@ -53,6 +57,7 @@ for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=kube-promethe
 echo "Waiting for Keda"
 for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=keda-operator --namespace keda --timeout=240s && break || echo "Waiting for Keda..."; sleep 30; done
 
+# Display ArgoCD password and ingress information
 echo "-----------------"
 echo "ArgoCD Admin pass"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
