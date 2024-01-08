@@ -9,10 +9,8 @@ fi
 
 # Remove LB
 echo "Destroying Load Balancer..."
-#kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 kubectl delete -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 kubectl delete svc/ingress-nginx-controller -n ingress
-# kubectl delete namespace ingress
 
 # Remove metrics port to EKS ingress security group
 EKS_SG=`aws eks describe-cluster --name $TF_VAR_name-eks --query 'cluster.resourcesVpcConfig.clusterSecurityGroupId' --output text`
@@ -26,13 +24,15 @@ echo "We are about to run terraform destroy. Make sure you are running this scri
 sleep 10
 
 terraform init
-# Grab Azure env variables
+
+# Is running in Actions?
 if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
   terraform destroy -auto-approve
 else
   terraform destroy
 fi
 
+# Remove volumes
 for i in `aws ec2 describe-volumes --filters "Name=tag:Name,Values=$TF_VAR_name*" --query "Volumes[*].{ID:VolumeId}" --output text` 
 do
   aws ec2 delete-volume --volume-id $i
