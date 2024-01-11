@@ -15,7 +15,6 @@ podTemplate(
             command: 'sleep',
             resourcelimitcpu: "500m",
             resourcelimitmemory: "500Mi",
-            resourcelimitmemory: "1g",
             resourcerequestcpu: "250m",
             resourcerequestmemory: "250Mi"
         )
