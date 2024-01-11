@@ -29,17 +29,24 @@ podTemplate(
                 """
             }
         }
-        stage('clone demo repo') {
+        stage('Clone Demo Repo') {
             container('build-maven') {
                 sh 'git clone https://github.com/davidmoten/maven-demo.git'
             }
         }
-        stage('install NPM Deps') {
+        stage('Build and Test App') {
             container('build-maven') {
                 sh """
                 cd maven-demo
-                ls -l
                 mvn clean install
+                """
+            }
+        }
+        stage('Push Assets') {
+            container('build-maven') {
+                sh """
+                echo "Logic to push assets"
+                cd maven-demo/target
                 ls -l
                 """
             }
