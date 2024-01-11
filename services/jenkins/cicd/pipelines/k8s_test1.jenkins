@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def label = "k8sagent-e2e"
+def label = "build-npm"
 def home = "/home/jenkins"
 def workspace = "${home}/workspace/build-jenkins-operator"
 def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
@@ -60,7 +60,7 @@ podTemplate(
                 sh """
                 cd npm-demo
                 echo "Logic to push assets to a destination"
-                ls nodejs-demoapp.zip
+                ls -l nodejs-demoapp.zip
                 """
             }
         }

@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 pipelineJob('k8s-test1') {
-    displayName('Jenkins Operator Test 1')
+    displayName('Jenkins Operator Test 1 - Build NPM')
 
     logRotator {
         numToKeep(10)
@@ -31,7 +31,7 @@ pipelineJob('k8s-test1') {
 }
 
 pipelineJob('k8s-test2') {
-    displayName('Jenkins Operator Test 2')
+    displayName('Jenkins Operator Test 2 - Build Django')
 
     logRotator {
         numToKeep(10)
