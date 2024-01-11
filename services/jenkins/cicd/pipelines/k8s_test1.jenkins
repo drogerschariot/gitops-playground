@@ -61,7 +61,8 @@ podTemplate(
             container('build-npm') {
                 sh """
                 cd npm-demo
-                npm run build
+                echo "Logic to push assets to a destination"
+                ls -l
                 """
             }
         }
