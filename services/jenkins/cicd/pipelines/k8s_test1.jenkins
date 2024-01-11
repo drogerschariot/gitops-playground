@@ -42,21 +42,18 @@ podTemplate(
         stage('Run Tests') {
             container('build-npm') {
                 sh 'cd npm-demo'
-                dir("npm-demo")
                 sh 'npm test'
             }
         }
         stage('Build Assets') {
             container('build-npm') {
                 sh 'cd npm-demo'
-                dir("npm-demo")
                 sh 'npm run build'
             }
         }
         stage('Push Assets') {
             container('build-npm') {
                 sh 'cd npm-demo'
-                dir("npm-demo")
                 sh 'npm run build'
             }
         }
