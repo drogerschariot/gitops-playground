@@ -23,7 +23,7 @@ podTemplate(
     )
 {
     node(label) {
-        stage('Install Deps') {
+        stage('Install Build Deps') {
             container('build_npm') {
                 sh 'apk add --update nodejs npm git"'
             }
@@ -33,16 +33,24 @@ podTemplate(
                 sh 'git clone'
             }
         }
-        stage('Build') {
+        stage('install NPM Deps') {
             container('build_npm') {
-                sh 'ls -l'
-                sh 'df -h'
-                sh 'touch hello'
+                sh 'npm install'
             }
         }
-        stage('test ls') {
+        stage('Run Tests') {
             container('build_npm') {
-                sh 'ls -l'
+                sh 'npm test'
+            }
+        }
+        stage('Build Assets') {
+            container('build_npm') {
+                sh 'npm run build'
+            }
+        }
+        stage('Push Assets') {
+            container('build_npm') {
+                sh 'npm run build'
             }
         }
     }
