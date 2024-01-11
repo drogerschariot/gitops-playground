@@ -25,7 +25,7 @@ podTemplate(
             container('build-maven') {
                 sh """
                 apt update
-                apt install default-jdk maven -y
+                apt install git default-jdk maven -y
                 """
             }
         }
