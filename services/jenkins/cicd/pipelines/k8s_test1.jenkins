@@ -9,11 +9,12 @@ podTemplate(
     label: label,
     containers: [
         containerTemplate(
-            name: 'alpine', 
+            name: 'build_npm', 
             image: 'alpine:3.11', 
             ttyEnabled: true, 
             command: 'cat',
-            // resourceLimitCpu : "500m",
+            resourceLimitCpu: "1000m",
+            resourceLimitMemory: "1000Mi",
             // resourceLimitMemory: "1g",
             // resourceRequestCpu: "250m",
             // resourceRequestMemory: "500Mi"
@@ -22,25 +23,25 @@ podTemplate(
     )
 {
     node(label) {
-        stage('Run shell') {
-            container('alpine') {
-                sh 'echo "hello world"'
+        stage('Install Deps') {
+            container('build_npm') {
+                sh 'apk add --update nodejs npm git"'
             }
         }
-        stage('Sleep 60 Seconds') {
-            container('alpine') {
-                sh 'sleep 60'
+        stage('clone demo repo') {
+            container('build_npm') {
+                sh 'git clone'
             }
         }
-        stage('test touch') {
-            container('alpine') {
+        stage('Build') {
+            container('build_npm') {
                 sh 'ls -l'
                 sh 'df -h'
                 sh 'touch hello'
             }
         }
         stage('test ls') {
-            container('alpine') {
+            container('build_npm') {
                 sh 'ls -l'
             }
         }
