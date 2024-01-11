@@ -60,8 +60,7 @@ podTemplate(
                 sh """
                 cd npm-demo
                 echo "Logic to push assets to a destination"
-                ls -l
-                file nodejs-demoapp.zip
+                ls nodejs-demoapp.zip
                 """
             }
         }
