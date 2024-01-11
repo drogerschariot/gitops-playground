@@ -22,8 +22,8 @@ spec:
           seedJobs:
           - id: jenkins-operator
             targets: "services/jenkins/cicd/jobs/*.jenkins"
-            description: "Jenkins Operator repository"
-            repositoryBranch: master
+            description: "Test Jenkins Jobs"
+            repositoryBranch: service/jenkins
             repositoryUrl: https://github.com/drogerschariot/gitops-playground
           basePlugins:
           - name: kubernetes

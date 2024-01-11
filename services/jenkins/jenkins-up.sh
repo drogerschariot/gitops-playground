@@ -8,6 +8,6 @@ if [ "`kubectl get pods -l app.kubernetes.io/name=argocd-server -o jsonpath='{.i
   exit 1
 fi
 
-
+kubectl apply -f jenkins.yml
 
 #for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=wazuh-indexer --namespace wazuh --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
