@@ -27,22 +27,22 @@ podTemplate(
                 sh 'echo "hello world"'
             }
         }
-        // stage('Sleep 60 Seconds') {
-        //     container('alpine') {
-        //         sh 'sleep 60'
-        //     }
-        // }
-        // stage('test touch') {
-        //     container('alpine') {
-        //         sh 'ls -l'
-        //         sh 'df -h'
-        //         sh 'touch hello'
-        //     }
-        // }
-        // stage('test ls') {
-        //     container('alpine') {
-        //         sh 'ls -l'
-        //     }
-        // }
+        stage('Sleep 60 Seconds') {
+            container('alpine') {
+                sh 'sleep 60'
+            }
+        }
+        stage('test touch') {
+            container('alpine') {
+                sh 'ls -l'
+                sh 'df -h'
+                sh 'touch hello'
+            }
+        }
+        stage('test ls') {
+            container('alpine') {
+                sh 'ls -l'
+            }
+        }
     }
 }
