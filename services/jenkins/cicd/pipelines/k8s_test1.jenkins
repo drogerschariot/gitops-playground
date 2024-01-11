@@ -13,10 +13,10 @@ podTemplate(
             image: 'alpine:3.11', 
             ttyEnabled: true, 
             command: 'sleep',
-            resourcelimitcpu: "500m",
-            resourcelimitmemory: "500Mi",
-            resourcerequestcpu: "250m",
-            resourcerequestmemory: "250Mi"
+            resourceLimitCpu: '500m',
+            resourceLimitMemory: '500Mi',
+            resourceRequestCpu: '250m',
+            resourceRequestMemory: '250Mi'
         )
     ],
     )
