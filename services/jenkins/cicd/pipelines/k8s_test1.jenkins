@@ -7,7 +7,14 @@ def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
 podTemplate(label: label,
     containers: [
-            containerTemplate(name: 'alpine', image: 'alpine:3.11', ttyEnabled: true, command: 'cat'),
+            containerTemplate(name: 'alpine', 
+                image: 'alpine:3.11', 
+                ttyEnabled: true, 
+                command: 'cat',
+                resourceLimitCpu : "500m",
+                resourceLimitMemory: "1g",
+                resourceRequestCpu: "250m",
+                resourceRequestMemory: "500Mi"),
     ],
     ) 
 {
@@ -15,6 +22,23 @@ podTemplate(label: label,
         stage('Run shell') {
             container('alpine') {
                 sh 'echo "hello world"'
+            }
+        }
+        stage('Sleep 60 Seconds') {
+            container('alpine') {
+                sh 'sleep 60'
+            }
+        }
+        stage('test touch') {
+            container('alpine') {
+                sh 'ls -l'
+                sh 'df -h'
+                sh 'touch hello'
+            }
+        }
+        stage('test ls') {
+            container('alpine') {
+                sh 'ls -l'
             }
         }
     }
