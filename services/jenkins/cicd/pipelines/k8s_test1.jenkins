@@ -25,7 +25,7 @@ podTemplate(
     node(label) {
         stage('Install Build Deps') {
             container('build-npm') {
-                sh 'apk add --update nodejs npm git"'
+                sh 'apk add --update nodejs npm git'
             }
         }
         stage('clone demo repo') {
