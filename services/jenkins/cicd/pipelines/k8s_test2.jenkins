@@ -38,7 +38,9 @@ podTemplate(
             container('build-maven') {
                 sh """
                 cd maven-demo
+                ls -l
                 mvn clean install
+                ls -l
                 """
             }
         }
