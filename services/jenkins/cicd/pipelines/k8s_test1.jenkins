@@ -11,8 +11,7 @@ podTemplate(
         containerTemplate(
             name: 'build-npm', 
             image: 'alpine:3.11', 
-            ttyEnabled: true, 
-            command: 'sleep',
+            ttyEnabled: true,
             resourceLimitCpu: '500m',
             resourceLimitMemory: '500Mi',
             resourceRequestCpu: '250m',
