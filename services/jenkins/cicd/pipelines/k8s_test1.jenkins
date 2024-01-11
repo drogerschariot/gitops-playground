@@ -35,21 +35,25 @@ podTemplate(
         }
         stage('install NPM Deps') {
             container('build-npm') {
+                dir("npm-demo")
                 sh 'npm install'
             }
         }
         stage('Run Tests') {
             container('build-npm') {
+                dir("npm-demo")
                 sh 'npm test'
             }
         }
         stage('Build Assets') {
             container('build-npm') {
+                dir("npm-demo")
                 sh 'npm run build'
             }
         }
         stage('Push Assets') {
             container('build-npm') {
+                dir("npm-demo")
                 sh 'npm run build'
             }
         }
