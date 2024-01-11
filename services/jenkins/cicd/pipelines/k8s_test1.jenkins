@@ -12,12 +12,12 @@ podTemplate(
             name: 'build-npm', 
             image: 'alpine:3.11', 
             ttyEnabled: true, 
-            command: 'cat',
-            // resourcelimitcpu: "1000m",
-            // resourcelimitmemory: "1000Mi",
-            // resourceLimitMemory: "1g",
-            // resourceRequestCpu: "250m",
-            // resourceRequestMemory: "500Mi"
+            command: 'sleep',
+            resourcelimitcpu: "500m",
+            resourcelimitmemory: "500Mi",
+            resourcelimitmemory: "1g",
+            resourcerequestcpu: "250m",
+            resourcerequestmemory: "250Mi"
         )
     ],
     )
@@ -62,7 +62,7 @@ podTemplate(
                 sh """
                 cd npm-demo
                 echo "Logic to push assets to a destination"
-                ls -l
+                file nodejs-demoapp.zip
                 """
             }
         }
