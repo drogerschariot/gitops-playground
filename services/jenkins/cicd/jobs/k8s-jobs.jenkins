@@ -1,0 +1,61 @@
+#!/usr/bin/env groovy
+
+pipelineJob('k8s-test1') {
+    displayName('Jenkins Operator Test 1')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/jenkinsci/kubernetes-operator.git')
+                        credentials('jenkins-operator')
+                    }
+                    branches('service/jenkins')
+                }
+            }
+            scriptPath('cicd/pipelines/k8s-test1.jenkins')
+        }
+    }
+}
+
+pipelineJob('k8s-test2') {
+    displayName('Jenkins Operator Test 2')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/jenkinsci/kubernetes-operator.git')
+                        credentials('jenkins-operator')
+                    }
+                    branches('service/jenkins')
+                }
+            }
+            scriptPath('cicd/pipelines/k8s-test2.jenkins')
+        }
+    }
+}
