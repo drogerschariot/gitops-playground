@@ -9,7 +9,7 @@ podTemplate(
     label: label,
     containers: [
         containerTemplate(
-            name: 'build_npm', 
+            name: 'build-npm', 
             image: 'alpine:3.11', 
             ttyEnabled: true, 
             command: 'cat',
@@ -24,32 +24,32 @@ podTemplate(
 {
     node(label) {
         stage('Install Build Deps') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'apk add --update nodejs npm git"'
             }
         }
         stage('clone demo repo') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'git clone'
             }
         }
         stage('install NPM Deps') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'npm install'
             }
         }
         stage('Run Tests') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'npm test'
             }
         }
         stage('Build Assets') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'npm run build'
             }
         }
         stage('Push Assets') {
-            container('build_npm') {
+            container('build-npm') {
                 sh 'npm run build'
             }
         }
