@@ -23,7 +23,10 @@ podTemplate(
     node(label) {
         stage('Install Build Deps') {
             container('build-maven') {
-                sh 'apt install default-jdk maven'
+                sh """
+                apt update
+                apt install default-jdk maven
+                """
             }
         }
         stage('clone demo repo') {
