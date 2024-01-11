@@ -13,8 +13,8 @@ podTemplate(
             image: 'alpine:3.11', 
             ttyEnabled: true, 
             command: 'cat',
-            resourceLimitCpu: "1000m",
-            resourceLimitMemory: "1000Mi",
+            resourcelimitcpu: "1000m",
+            resourcelimitmemory: "1000Mi",
             // resourceLimitMemory: "1g",
             // resourceRequestCpu: "250m",
             // resourceRequestMemory: "500Mi"
