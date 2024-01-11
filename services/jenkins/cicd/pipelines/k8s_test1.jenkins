@@ -35,7 +35,7 @@ podTemplate(
         }
         stage('install NPM Deps') {
             container('build-npm') {
-                steps {
+                step {
                     dir("npm-demo")
                     sh 'npm install'
                 }
