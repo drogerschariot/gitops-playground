@@ -5,18 +5,21 @@ def home = "/home/jenkins"
 def workspace = "${home}/workspace/build-jenkins-operator"
 def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
-podTemplate(label: label,
+podTemplate(
+    label: label,
     containers: [
-            containerTemplate(name: 'alpine', 
-                image: 'alpine:3.11', 
-                ttyEnabled: true, 
-                command: 'cat',
-                resourceLimitCpu : "500m",
-                resourceLimitMemory: "1g",
-                resourceRequestCpu: "250m",
-                resourceRequestMemory: "500Mi")
+        containerTemplate(
+            name: 'alpine', 
+            image: 'alpine:3.11', 
+            ttyEnabled: true, 
+            command: 'cat',
+            // resourceLimitCpu : "500m",
+            // resourceLimitMemory: "1g",
+            // resourceRequestCpu: "250m",
+            // resourceRequestMemory: "500Mi"
+        )
     ],
-    ) 
+    )
 {
     node(label) {
         stage('Run shell') {
