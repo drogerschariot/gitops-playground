@@ -30,7 +30,7 @@ podTemplate(
         }
         stage('clone demo repo') {
             container('build-npm') {
-                sh 'git clone'
+                sh 'git clone https://github.com/shayki5/npm-demo.git'
             }
         }
         stage('install NPM Deps') {
