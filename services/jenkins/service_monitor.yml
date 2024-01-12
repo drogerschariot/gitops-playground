@@ -11,7 +11,7 @@ spec:
     params:
       format:
       - prometheus
-    path: /prometheus
+    path: /prometheus/ # Must have trailing slash
     port: jenkins
     scheme: http
     scrapeTimeout: 10s

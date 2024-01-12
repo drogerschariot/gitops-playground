@@ -10,4 +10,11 @@ fi
 
 kubectl apply -f jenkins.yml
 
-#for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=wazuh-indexer --namespace wazuh --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+for i in {1..10}; do kubectl wait --for=condition=ready pod -l app=jenkins-operator --namespace jenkins --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
+
+# Insert name for jenkins service
+kubectl patch service jenkins-operator-http-jenkins -p '{"spec":{"ports":[{"port":8080,"name":"jenkins"}]}}' --namespace jenkins
+
+# Install Service monitor and Graphana dashboard
+kubectl apply -f service_monitor.yml
+kubectl apply -f jenkins-dash.yml
