@@ -40,16 +40,18 @@ spec:
             version: 1670.v564dc8b_982d0
           - name: kubernetes-credentials-provider
             version: 1.234.vf3013b_35f5b_a
+          - name: prometheus
+            version: 2.5.0
           enabled: true
           namespace: jenkins
           latestPlugins: true
           resources:
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 1.5Gi
             requests:
               cpu: 250m
-              memory: 500Mi
+              memory: 1Gi
           volumes:
             - name: backup 
               persistentVolumeClaim:

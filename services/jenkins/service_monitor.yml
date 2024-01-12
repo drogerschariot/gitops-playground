@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: monitoring
+  labels:
+    release: kube-prometheus
+  name: jenkins
+spec:
+  endpoints:
+  - interval: 30s
+    params:
+      format:
+      - prometheus
+    path: /prometheus
+    port: jenkins
+    scheme: http
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - jenkins
+  selector:
+    matchLabels:
+      app: jenkins-operator
