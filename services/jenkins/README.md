@@ -34,7 +34,7 @@ seedJobs:
     unstableOnDeprecation: false
 ```
 
-Jobs:
+Demo Jobs:
 - [Jenkins Operator Test 1 - Build NPM](http://localhost:8080/job/k8s-test1/)
 - [Jenkins Operator Test 2 - Build Django](http://localhost:8080/job/k8s-test2/)
 <img width="1498" alt="Screenshot 2024-01-12 at 1 36 05 PM" src="https://github.com/drogerschariot/gitops-playground/assets/1655964/24297ed7-740a-434e-aaff-cf5ae29a6941">
