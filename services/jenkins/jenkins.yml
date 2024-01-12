@@ -1,0 +1,91 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: jenkins-operator
+    repoURL: https://raw.githubusercontent.com/jenkinsci/kubernetes-operator/master/chart
+    targetRevision: 0.8.0
+    helm:
+      releaseName: jenkins-operator
+      valuesObject:
+        jenkins:
+          seedJobs:
+          - id: jenkins-operator
+            targets: "services/jenkins/cicd/jobs/*.jenkins"
+            description: "Test Jenkins Jobs"
+            repositoryBranch: service/jenkins
+            repositoryUrl: https://github.com/drogerschariot/gitops-playground
+          basePlugins:
+          - name: kubernetes
+            version: 4029.v5712230ccb_f8
+          - name: workflow-job
+            version: 1342.v046651d5b_dfe
+          - name: workflow-aggregator
+            version: 596.v8c21c963d92d
+          - name: git
+            version: 5.2.1
+          - name: job-dsl
+            version: "1.85"
+          - name: configuration-as-code
+            version: 1670.v564dc8b_982d0
+          - name: kubernetes-credentials-provider
+            version: 1.234.vf3013b_35f5b_a
+          - name: prometheus
+            version: 2.5.0
+          enabled: true
+          namespace: jenkins
+          latestPlugins: true
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1.5Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
+          volumes:
+            - name: backup 
+              persistentVolumeClaim:
+                claimName: jenkins-backup
+          backup:
+            enabled: true
+            pvc:
+              enabled: true
+              size: 5Gi
+            resources:
+              limits:
+                cpu: 100m
+                memory: 500Mi
+              requests:
+                cpu: 100m
+                memory: 500Mi
+            env:
+              - name: BACKUP_DIR
+                value: /backup
+              - name: JENKINS_HOME
+                value: /jenkins-home
+              - name: BACKUP_COUNT
+                value: "3" 
+            volumeMounts:
+              - name: jenkins-home
+                mountPath: /jenkins-home 
+              - mountPath: /backup 
+                name: backup
+        cert-manager:
+          startupapicheck:
+            enabled: false
+        operator:
+          replicaCount: 1
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: jenkins

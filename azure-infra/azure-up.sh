@@ -33,7 +33,12 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -
 
 echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications, Keda"
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
-kubectl apply -f ../argocd/argocd/cert-manager.yaml --namespace argocd
+# Add CERTBOT_EMAIL to cluster-issuer
+sed -i '' "s/CERTBOT_EMAIL/$CERTBOT_EMAIL/" ../argocd/cert-manager/cluster-issuer.yml
+kubectl create namespace cert-manager 
+kubectl apply -f ../argocd/cert-manager/cert-manager.yml
+sleep 30
+kubectl apply -f ../argocd/cert-manager/cluster-issuer.yml
 kubectl apply -f ../argocd/argocd/prom.yml --namespace argocd
 kubectl apply -f ../argocd/argocd/keda.yml --namespace argocd
 

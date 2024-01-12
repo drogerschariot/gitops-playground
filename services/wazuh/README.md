@@ -9,7 +9,7 @@ Wazuh is an open-source security information and event management (SIEM) tool th
 - `./wazuh-up.sh`
 
 ## DaemonSet Wazuh Agents
-The `wazuh-up.sh` script will install Wazuh Agents to the cluster nodes automatically. You can see the agents when loggin into the dashboard
+The `wazuh-up.sh` script will install Wazuh Agents to the cluster nodes automatically. You can see the agents when logging into the dashboard
 
 ## Access
 - Wazuh Dashboard:

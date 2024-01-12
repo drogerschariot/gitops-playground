@@ -5,7 +5,7 @@ metadata:
   namespace: cert-manager
 spec:
   acme:
-    email: ${CERTBOT_EMAIL}
+    email: drogers@chariotsolutions.com
     privateKeySecretRef:
       name: letsencrypt
     server: https://acme-staging-v02.api.letsencrypt.org/directory

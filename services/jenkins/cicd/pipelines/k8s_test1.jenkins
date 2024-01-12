@@ -1,0 +1,68 @@
+#!/usr/bin/env groovy
+
+def label = "build-npm"
+def home = "/home/jenkins"
+def workspace = "${home}/workspace/build-jenkins-operator"
+def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
+
+podTemplate(
+    label: label,
+    containers: [
+        containerTemplate(
+            name: 'build-npm', 
+            image: 'alpine:3.11', 
+            ttyEnabled: true,
+            resourceLimitCpu: '500m',
+            resourceLimitMemory: '500Mi',
+            resourceRequestCpu: '250m',
+            resourceRequestMemory: '250Mi'
+        )
+    ],
+    )
+{
+    node(label) {
+        stage('Install Build Deps') {
+            container('build-npm') {
+                sh 'apk add --update nodejs npm git'
+            }
+        }
+        stage('clone demo repo') {
+            container('build-npm') {
+                sh 'git clone https://github.com/shayki5/npm-demo.git'
+            }
+        }
+        stage('install NPM Deps') {
+            container('build-npm') {
+                sh """
+                cd npm-demo
+                npm install
+                """
+            }
+        }
+        stage('Run Tests') {
+            container('build-npm') {
+                sh """
+                cd npm-demo
+                npm test
+                """
+            }
+        }
+        stage('Build Assets') {
+            container('build-npm') {
+                sh """
+                cd npm-demo
+                npm run build
+                """
+            }
+        }
+        stage('Push Assets') {
+            container('build-npm') {
+                sh """
+                cd npm-demo
+                echo "Logic to push assets to a destination"
+                ls -l nodejs-demoapp.zip
+                """
+            }
+        }
+    }
+}
