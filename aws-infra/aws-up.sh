@@ -2,6 +2,15 @@
 
 set -e
 
+# Get Platform
+PLATFORM="$(uname -s)"
+case "${PLATFORM}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    *)          machine="UNKNOWN:${PLATFORM}"
+esac
+
 # Grab AWS env variables
 if [[  ! -z "${IS_GITHUB_ACTIONS}" ]]; then
   echo "Using Actions ENVs"
@@ -38,7 +47,11 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -
 echo "Installing nginx-ingress, cert-manager, and Prometheus ArgoCD Applications, Keda"
 kubectl apply -f ../argocd/argocd/nginx-ingress.yml --namespace argocd
 # Add CERTBOT_EMAIL to cluster-issuer
-sed -i '' "s/CERTBOT_EMAIL/$CERTBOT_EMAIL/" ../argocd/cert-manager/cluster-issuer.yml
+if [[ "$machine" == "Linux"]]; then
+  sed -i "s/CERTBOT_EMAIL/$CERTBOT_EMAIL/" ../argocd/cert-manager/cluster-issuer.yml
+else #MacOS
+  sed -i '' "s/CERTBOT_EMAIL/$CERTBOT_EMAIL/" ../argocd/cert-manager/cluster-issuer.yml
+fi
 kubectl create namespace cert-manager 
 kubectl apply -f ../argocd/cert-manager/cert-manager.yml
 sleep 30
