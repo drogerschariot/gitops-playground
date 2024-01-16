@@ -7,7 +7,7 @@ GitLab is a web-based platform that provides a complete set of tools for softwar
 - `./gitlab-up.sh`
 
 ## Access
-In the `test-lab.yml` manifest, you will need to replace the domain to something you own. The operator will create a ingress to the webserveres and use cert-manager to create certificates.
+In the `test-lab.yml` manifest, you will need to replace the domain to something you own. The operator will create an ingress to the webservices and use cert-manager to create certificates.
 ```yaml
 apiVersion: apps.gitlab.com/v1beta1
 kind: GitLab
