@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: monitoring
+  labels:
+    release: kube-prometheus
+  name: gitlab
+spec:
+  endpoints:
+  - interval: 30s
+    params:
+      format:
+      - prometheus
+    path: /metrics # Must have trailing slash
+    port: http-metrics
+    scheme: http
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - gitlab
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gitlab
