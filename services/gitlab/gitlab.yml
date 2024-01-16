@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab-operator
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+  source:
+    chart: gitlab-operator
+    repoURL:  https://gitlab.com/api/v4/projects/18899486/packages/helm/stable
+    targetRevision: 0.27.1
+    helm:
+      releaseName: gitlab-operator
+      #valuesObject:
+  
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: gitlab
