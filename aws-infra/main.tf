@@ -4,6 +4,15 @@ terraform {
       version = "~> 5.0"
       source  = "hashicorp/aws"
     }
+
+    kubernetes = {
+      version = "~> 2.25"
+      source = "hashicorp/kubernetes"
+    }
+
+    local = {
+      source = "hashicorp/local"
+    }
   }
 
   required_version = ">= 1.1.0"
@@ -13,6 +22,11 @@ provider "aws" {
   region = local.vpc_information.region
 }
 
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = "gitops-actions"
+}
+
 locals {
   vpc_information = {
     availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
@@ -20,6 +34,8 @@ locals {
     region             = var.region
     vpc_cidr           = "10.101.0.0/16"
   }
+
+  subnet_availability_zones = tolist(aws_subnet.public[*].availability_zone)
 }
 
 data "aws_caller_identity" "current" {}
@@ -74,11 +90,241 @@ module "eks" {
       cluster_iam_role_arn = aws_iam_role.node_role.arn
 
       min_size     = var.node_size
-      max_size     = var.node_size
+      max_size     = var.node_max_size
       desired_size = var.node_size
     }
   }
+
+  manage_aws_auth_configmap = true
+  aws_auth_roles = [
+    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
+    {
+      rolearn  = module.karpenter.role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+  ]
 }
+
+module "karpenter" {
+  source = "terraform-aws-modules/eks/aws//modules/karpenter"
+
+  cluster_name = module.eks.cluster_name
+
+  irsa_oidc_provider_arn          = module.eks.oidc_provider_arn
+  irsa_namespace_service_accounts = ["karpenter:karpenter"]
+
+  # Attach additional IAM policies to the Karpenter node IAM role
+  iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
+# Create roles and policies for Karpenter
+# resource "aws_iam_instance_profile" "karpenter" {
+#   name = "karpenter-controller"
+#   role = aws_iam_role.karpenter_profile_instance_role.name
+# }
+
+# resource "aws_iam_policy" "instance_profile_policy" {
+#   name        = "instance_profile-karpenter-policy"
+#   description = "instance profile for karpenter policy"
+
+#   policy = jsonencode({
+#     "Version" : "2012-10-17",
+#     "Statement" : [
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ec2:DescribeInstances",
+#           "ec2:DescribeInstanceTypes",
+#           "ec2:DescribeRouteTables",
+#           "ec2:DescribeSecurityGroups",
+#           "ec2:DescribeSubnets",
+#           "ec2:DescribeVolumes",
+#           "ec2:DescribeVolumesModifications",
+#           "ec2:DescribeVpcs",
+#           "eks:DescribeCluster"
+#         ],
+#         "Resource" : "*"
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ec2:AssignPrivateIpAddresses",
+#           "ec2:AttachNetworkInterface",
+#           "ec2:CreateNetworkInterface",
+#           "ec2:DeleteNetworkInterface",
+#           "ec2:DescribeInstances",
+#           "ec2:DescribeTags",
+#           "ec2:DescribeNetworkInterfaces",
+#           "ec2:DescribeInstanceTypes",
+#           "ec2:DetachNetworkInterface",
+#           "ec2:ModifyNetworkInterfaceAttribute",
+#           "ec2:UnassignPrivateIpAddresses"
+#         ],
+#         "Resource" : "*"
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ec2:CreateTags"
+#         ],
+#         "Resource" : [
+#           "arn:aws:ec2:*:*:network-interface/*"
+#         ]
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ecr:GetAuthorizationToken",
+#           "ecr:BatchCheckLayerAvailability",
+#           "ecr:GetDownloadUrlForLayer",
+#           "ecr:GetRepositoryPolicy",
+#           "ecr:DescribeRepositories",
+#           "ecr:ListImages",
+#           "ecr:DescribeImages",
+#           "ecr:BatchGetImage",
+#           "ecr:GetLifecyclePolicy",
+#           "ecr:GetLifecyclePolicyPreview",
+#           "ecr:ListTagsForResource",
+#           "ecr:DescribeImageScanFindings"
+#         ],
+#         "Resource" : "*"
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ssm:DescribeAssociation",
+#           "ssm:GetDeployablePatchSnapshotForInstance",
+#           "ssm:GetDocument",
+#           "ssm:DescribeDocument",
+#           "ssm:GetManifest",
+#           "ssm:GetParameter",
+#           "ssm:GetParameters",
+#           "ssm:ListAssociations",
+#           "ssm:ListInstanceAssociations",
+#           "ssm:PutInventory",
+#           "ssm:PutComplianceItems",
+#           "ssm:PutConfigurePackageResult",
+#           "ssm:UpdateAssociationStatus",
+#           "ssm:UpdateInstanceAssociationStatus",
+#           "ssm:UpdateInstanceInformation"
+#         ],
+#         "Resource" : "*"
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ssmmessages:CreateControlChannel",
+#           "ssmmessages:CreateDataChannel",
+#           "ssmmessages:OpenControlChannel",
+#           "ssmmessages:OpenDataChannel"
+#         ],
+#         "Resource" : "*"
+#       },
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "ec2messages:AcknowledgeMessage",
+#           "ec2messages:DeleteMessage",
+#           "ec2messages:FailMessage",
+#           "ec2messages:GetEndpoint",
+#           "ec2messages:GetMessages",
+#           "ec2messages:SendReply"
+#         ],
+#         "Resource" : "*"
+#       }
+#     ]
+#   })
+# }
+
+# resource "aws_iam_role" "karpenter_profile_instance_role" {
+#   name = format("karpenter-profile-instance")
+
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = "sts:AssumeRole"
+#         Effect = "Allow"
+#         Sid    = ""
+#         Principal = {
+#           "Service" : "ec2.amazonaws.com"
+#         },
+#       }
+#     ]
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "instance-profile-attach" {
+#   role       = aws_iam_role.karpenter_profile_instance_role.name
+#   policy_arn = aws_iam_policy.instance_profile_policy.arn
+# }
+
+# resource "aws_iam_policy" "karpenter_controller" {
+#   name        = "karpenter-policy"
+#   description = "karpenter-controller service account  policy"
+
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = [
+#           "ec2:CreateLaunchTemplate",
+#           "ec2:CreateFleet",
+#           "ec2:RunInstances",
+#           "ec2:CreateTags",
+#           "iam:PassRole",
+#           "ec2:TerminateInstances",
+#           "ec2:DescribeLaunchTemplates",
+#           "ec2:DeleteLaunchTemplate",
+#           "ec2:DescribeInstances",
+#           "ec2:DescribeSecurityGroups",
+#           "ec2:DescribeSubnets",
+#           "ec2:DescribeInstanceTypes",
+#           "ec2:DescribeInstanceTypeOfferings",
+#           "ec2:DescribeAvailabilityZones",
+#           "ssm:GetParameter",
+#           "pricing:GetProducts"
+#         ]
+#         Effect   = "Allow"
+#         Resource = "*"
+#       },
+#     ]
+#   })
+# }
+
+# resource "aws_iam_role" "karpenter_role" {
+#   name = format("karpenter-role")
+
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = "sts:AssumeRoleWithWebIdentity"
+#         Effect = "Allow"
+#         Sid    = ""
+#         Principal = {
+#           Federated = module.eks.oidc_provider_arn
+#         }
+#       },
+#     ]
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "karpenter-attach" {
+#   role       = aws_iam_role.karpenter_role.name
+#   policy_arn = aws_iam_policy.karpenter_controller.arn
+# }
 
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eks-cluster-role"
@@ -239,6 +485,70 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
     module.eks
   ]
 }
+
+### Karpenter values
+# resource "local_file" "karpenter_values" {
+#   content  = <<-EOT
+#         controller:
+#           logLevel: "debug"	
+#         serviceAccount:
+#           annotations:  
+#                 eks.amazonaws.com/role-arn: ${aws_iam_role.karpenter_role.arn}
+#         clusterName: "${module.eks.cluster_name}" # it is has to be the exact same name of the cluster
+#         clusterEndpoint: ${module.eks.cluster_endpoint}
+        
+#         # aws configuration
+        
+#         aws:
+#           # give the instance username we've created before. it already got the role inside.
+#           defaultInstanceProfile: ${aws_iam_instance_profile.karpenter.name}
+#     EOT
+
+#   filename = "values.yaml"
+# }
+
+# resource "local_file" "karpenter_provisioner" {
+#   filename = "provisioner-jenkins.yaml"
+#   content  = <<EOT
+# apiVersion: karpenter.sh/v1alpha5
+# kind: Provisioner
+# metadata:
+#   name: karpenter-node-group-jenkins
+#   namespace: karpenter
+# spec:
+#   provider:
+#     securityGroupSelector:
+#       Name: "${module.eks.cluster_security_group_id}" # take the security group you are using with the cluster
+#     subnetSelector: 
+#       Name: "*${var.name}-public-subnet*" # take the subnet you are using with the cluster
+#   labels:
+#     cluster: "${module.eks.cluster_name}"
+#     name: karpter-provisioner-jenkins
+#     created-by: "karpenter"   
+#   requirements:
+#   - key: "node.kubernetes.io/instance-type"
+#     operator: In
+#     values: ["t3.medium", "t3.large", "t3.xlarge"]
+#   - key: "topology.kubernetes.io/zone"
+#     operator: In
+#     values: [${join(", ", local.subnet_availability_zones)}]
+#   - key: "kubernetes.io/arch"
+#     operator: In
+#     values: ["amd64"]
+#   - key: "karpenter.sh/capacity-type" 
+#     operator: In
+#     values: ["on-demand", "spot"]
+#     # this is an example for how we can use the label from above
+#   - key: created-by
+#     operator: In
+#     values: ["karpenter"]
+#   # limit our karpenter node expand. it will not pass those values.
+#   limits:
+#     resources:
+#       cpu: "20"
+#       memory: 64Gi
+# EOT
+# }
 
 ### VPC
 
