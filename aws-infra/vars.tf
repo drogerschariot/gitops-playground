@@ -19,7 +19,7 @@ variable "node_size" {
 
 variable "node_max_size" {
   type = number
-  default = 6
+  default = 10
 }
 
 variable "cluster_version" {

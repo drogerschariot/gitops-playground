@@ -23,8 +23,15 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = "gitops-actions"
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
 }
 
 locals {
@@ -34,7 +41,7 @@ locals {
     region             = var.region
     vpc_cidr           = "10.101.0.0/16"
   }
-
+  cluster_name = "${var.name}-eks"
   subnet_availability_zones = tolist(aws_subnet.public[*].availability_zone)
 }
 
@@ -55,7 +62,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.0.4"
 
-  cluster_name    = "${var.name}-eks"
+  cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
 
   vpc_id     = aws_vpc.vpc.id
@@ -87,11 +94,14 @@ module "eks" {
       name = "default_node_group"
 
       instance_types       = [var.node_type]
-      cluster_iam_role_arn = aws_iam_role.node_role.arn
+      cluster_iam_role_arn = aws_iam_role.karpenter_profile_node_role.arn
 
       min_size     = var.node_size
       max_size     = var.node_max_size
       desired_size = var.node_size
+      tags = {
+        "karpenter.sh/discovery" = local.cluster_name
+      }
     }
   }
 
@@ -99,7 +109,7 @@ module "eks" {
   aws_auth_roles = [
     # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
     {
-      rolearn  = module.karpenter.role_arn
+      rolearn  = aws_iam_role.karpenter_profile_node_role.arn
       username = "system:node:{{EC2PrivateDNSName}}"
       groups = [
         "system:bootstrappers",
@@ -109,30 +119,27 @@ module "eks" {
   ]
 }
 
-module "karpenter" {
-  source = "terraform-aws-modules/eks/aws//modules/karpenter"
+# resource "aws_ec2_tag" "eks_created_cluster_security_group_tag" {
+#   resource_id = module.eks.cluster_security_group_id
+#   key         = "karpenter.sh/discovery"
+#   value       = module.eks.cluster_name
+# }
 
-  cluster_name = module.eks.cluster_name
+resource "aws_ec2_tag" "eks_created_security_group_tag2" {
+  resource_id = module.eks.node_security_group_id
+  key         = "karpenter.sh/discovery"
+  value       = module.eks.cluster_name
 
-  irsa_oidc_provider_arn          = module.eks.oidc_provider_arn
-  irsa_namespace_service_accounts = ["karpenter:karpenter"]
-
-  # Attach additional IAM policies to the Karpenter node IAM role
-  iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  depends_on = [ module.eks ]
 }
 
-# Create roles and policies for Karpenter
-# resource "aws_iam_instance_profile" "karpenter" {
-#   name = "karpenter-controller"
-#   role = aws_iam_role.karpenter_profile_instance_role.name
-# }
+resource "aws_ec2_tag" "eks_created_security_group_tag" {
+  resource_id = module.eks.cluster_primary_security_group_id
+  key         = "karpenter.sh/discovery"
+  value       = module.eks.cluster_name
+
+  depends_on = [ module.eks ]
+}
 
 # resource "aws_iam_policy" "instance_profile_policy" {
 #   name        = "instance_profile-karpenter-policy"
@@ -247,79 +254,159 @@ module "karpenter" {
 #   })
 # }
 
-# resource "aws_iam_role" "karpenter_profile_instance_role" {
-#   name = format("karpenter-profile-instance")
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = "sts:AssumeRole"
-#         Effect = "Allow"
-#         Sid    = ""
-#         Principal = {
-#           "Service" : "ec2.amazonaws.com"
-#         },
-#       }
-#     ]
-#   })
-# }
+resource "aws_iam_role" "karpenter_profile_node_role" {
+  name = "karpenter-node-role"
 
-# resource "aws_iam_role_policy_attachment" "instance-profile-attach" {
-#   role       = aws_iam_role.karpenter_profile_instance_role.name
-#   policy_arn = aws_iam_policy.instance_profile_policy.arn
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          "Service" : "ec2.amazonaws.com"
+        },
+      }
+    ]
+  })
+}
 
-# resource "aws_iam_policy" "karpenter_controller" {
-#   name        = "karpenter-policy"
-#   description = "karpenter-controller service account  policy"
+resource "aws_iam_role_policy_attachment" "karpenter_profile_node_AmazonEKSWorkerNodePolicy" {
+  role       = aws_iam_role.karpenter_profile_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = [
-#           "ec2:CreateLaunchTemplate",
-#           "ec2:CreateFleet",
-#           "ec2:RunInstances",
-#           "ec2:CreateTags",
-#           "iam:PassRole",
-#           "ec2:TerminateInstances",
-#           "ec2:DescribeLaunchTemplates",
-#           "ec2:DeleteLaunchTemplate",
-#           "ec2:DescribeInstances",
-#           "ec2:DescribeSecurityGroups",
-#           "ec2:DescribeSubnets",
-#           "ec2:DescribeInstanceTypes",
-#           "ec2:DescribeInstanceTypeOfferings",
-#           "ec2:DescribeAvailabilityZones",
-#           "ssm:GetParameter",
-#           "pricing:GetProducts"
-#         ]
-#         Effect   = "Allow"
-#         Resource = "*"
-#       },
-#     ]
-#   })
-# }
+resource "aws_iam_role_policy_attachment" "karpenter_profile_node_AmazonEKS_CNI_Policy" {
+  role       = aws_iam_role.karpenter_profile_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
 
-# resource "aws_iam_role" "karpenter_role" {
-#   name = format("karpenter-role")
+resource "aws_iam_role_policy_attachment" "karpenter_profile_node_AmazonEC2ContainerRegistryReadOnly" {
+  role       = aws_iam_role.karpenter_profile_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = "sts:AssumeRoleWithWebIdentity"
-#         Effect = "Allow"
-#         Sid    = ""
-#         Principal = {
-#           Federated = module.eks.oidc_provider_arn
-#         }
-#       },
-#     ]
-#   })
-# }
+resource "aws_iam_role_policy_attachment" "karpenter_profile_node_AmazonSSMManagedInstanceCore" {
+  role       = aws_iam_role.karpenter_profile_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# Create roles and policies for Karpenter
+resource "aws_iam_instance_profile" "karpenter_instance_profile" {
+  name = "karpenter-instance-profile"
+  role = aws_iam_role.karpenter_profile_node_role.name
+}
+
+resource "aws_iam_policy" "karpenter_controller_policy" {
+  name        = "karpenter-controller-policy"
+  description = "Karpenter controller service account policy"
+
+  policy = <<EOF
+{
+  "Statement": [
+      {
+          "Action": [
+              "ssm:GetParameter",
+              "ec2:DescribeImages",
+              "ec2:RunInstances",
+              "ec2:DescribeSubnets",
+              "ec2:DescribeSecurityGroups",
+              "ec2:DescribeLaunchTemplates",
+              "ec2:DescribeInstances",
+              "ec2:DescribeInstanceTypes",
+              "ec2:DescribeInstanceTypeOfferings",
+              "ec2:DescribeAvailabilityZones",
+              "ec2:DeleteLaunchTemplate",
+              "ec2:CreateTags",
+              "ec2:CreateLaunchTemplate",
+              "ec2:CreateFleet",
+              "ec2:DescribeSpotPriceHistory",
+              "iam:GetInstanceProfile",
+              "iam:CreateInstanceProfile",
+              "iam:TagInstanceProfile",
+              "iam:AddRoleToInstanceProfile",
+              "iam:PassRole",
+              "pricing:GetProducts"
+          ],
+          "Effect": "Allow",
+          "Resource": "*",
+          "Sid": "Karpenter"
+      },
+      {
+        "Sid": "AllowInterruptionQueueActions",
+        "Effect": "Allow",
+        "Resource": "${aws_sqs_queue.karpenter_queue.arn}",
+        "Action": [
+          "sqs:DeleteMessage",
+          "sqs:GetQueueUrl",
+          "sqs:ReceiveMessage"
+        ]
+      },
+      {
+          "Action": "ec2:TerminateInstances",
+          "Condition": {
+              "StringLike": {
+                  "ec2:ResourceTag/karpenter.sh/nodepool": "*"
+              }
+          },
+          "Effect": "Allow",
+          "Resource": "*",
+          "Sid": "ConditionalEC2Termination"
+      },
+      {
+          "Effect": "Allow",
+          "Action": "iam:PassRole",
+          "Resource": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/KarpenterNodeRole-${module.eks.cluster_name}",
+          "Sid": "PassNodeIAMRole"
+      },
+      {
+          "Effect": "Allow",
+          "Action": "eks:DescribeCluster",
+          "Resource": "arn:aws:eks:${var.region}:${data.aws_caller_identity.current.account_id}:cluster/${module.eks.cluster_name}",
+          "Sid": "EKSClusterEndpointLookup"
+      }
+  ],
+  "Version": "2012-10-17"
+}
+EOF
+}
+
+resource "aws_eks_pod_identity_association" "karpenter_pod_identity" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "kube-system"
+  service_account = "karpenter"
+  role_arn        = aws_iam_role.karpenter_controller_role.arn
+}
+
+
+resource "aws_iam_role" "karpenter_controller_role" {
+  name = "karpenter-controller-role"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "pods.eks.amazonaws.com"
+            },
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ]
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_controller_attach" {
+  policy_arn = aws_iam_policy.karpenter_controller_policy.arn
+  role       = aws_iam_role.karpenter_controller_role.name
+}
 
 # resource "aws_iam_role_policy_attachment" "karpenter-attach" {
 #   role       = aws_iam_role.karpenter_role.name
@@ -343,6 +430,97 @@ resource "aws_iam_role" "eks_cluster_role" {
   ]
 }
 POLICY
+}
+
+## SQS for Karpenter
+resource "aws_sqs_queue" "karpenter_queue" {
+  name                      = module.eks.cluster_name
+  message_retention_seconds = 600
+  sqs_managed_sse_enabled   = true
+
+  tags = {
+    Environment = "production"
+  }
+}
+
+data "aws_iam_policy_document" "karpenter_queue_policy" {
+  statement {
+    sid    = "First"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com", "sqs.amazonaws.com"]
+    }
+
+    actions   = ["sqs:SendMessage"]
+    resources = [aws_sqs_queue.karpenter_queue.arn]
+  }
+}
+
+resource "aws_sqs_queue_policy" "karpenter_queue_policy" {
+  queue_url = aws_sqs_queue.karpenter_queue.id
+  policy    = data.aws_iam_policy_document.karpenter_queue_policy.json
+}
+
+resource "aws_cloudwatch_event_rule" "ScheduledChangeRule" {
+  name        = "KarpenterInterruptionQueueTarget"
+  description = "AWS Health Event Rule"
+
+  event_pattern = jsonencode({
+    source      = ["aws.health"],
+    detail_type = ["AWS Health Event"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "ScheduledChangeRule" {
+  rule = aws_cloudwatch_event_rule.ScheduledChangeRule.name
+  arn  = aws_sqs_queue.karpenter_queue.arn
+}
+
+resource "aws_cloudwatch_event_rule" "KarpenterInterruptionQueueTarget" {
+  name        = "KarpenterInterruptionQueueTarget"
+  description = "EC2 Spot Instance Interruption Warning"
+
+  event_pattern = jsonencode({
+    source      = ["aws.ec2"],
+    detail_type = ["EC2 Spot Instance Interruption Warning"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "KarpenterInterruptionQueueTarget" {
+  rule = aws_cloudwatch_event_rule.KarpenterInterruptionQueueTarget.name
+  arn  = aws_sqs_queue.karpenter_queue.arn
+}
+
+resource "aws_cloudwatch_event_rule" "RebalanceRule" {
+  name        = "RebalanceRule"
+  description = "EC2 Instance Rebalance Recommendation"
+
+  event_pattern = jsonencode({
+    source      = ["aws.ec2"],
+    detail_type = ["EC2 Instance Rebalance Recommendation"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "RebalanceRule" {
+  rule = aws_cloudwatch_event_rule.RebalanceRule.name
+  arn  = aws_sqs_queue.karpenter_queue.arn
+}
+
+resource "aws_cloudwatch_event_rule" "InstanceStateChangeRule" {
+  name        = "InstanceStateChangeRule"
+  description = "EC2 Instance State-change Notification"
+
+  event_pattern = jsonencode({
+    source      = ["aws.ec2"],
+    detail_type = ["EC2 Instance State-change Notification"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "InstanceStateChangeRule" {
+  rule = aws_cloudwatch_event_rule.InstanceStateChangeRule.name
+  arn  = aws_sqs_queue.karpenter_queue.arn
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
@@ -577,8 +755,10 @@ resource "aws_subnet" "public" {
   tags = { 
     Name = "${var.name}-public-subnet",
     "kubernetes.io/role/elb" = "1",
-    "kubernetes.io/cluster/${var.name}-eks" = "shared"}
-}
+    "kubernetes.io/cluster/${var.name}-eks" = "shared",
+    "karpenter.sh/discovery" = local.cluster_name
+  }
+}  
 
 resource "aws_route_table" "public" {
   count = length(local.vpc_information.public_subnets)
@@ -656,4 +836,13 @@ resource "aws_network_acl" "public" {
     from_port       = 0
     to_port         = 0
   }
+}
+
+# Outputs
+output "node_security_group_id" {
+  value = module.eks.node_security_group_id
+}
+
+output "cluster_primary_security_group_id" {
+  value = module.eks.cluster_primary_security_group_id
 }

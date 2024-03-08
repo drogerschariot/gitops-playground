@@ -27,6 +27,7 @@ terraform apply -parallelism=1 -auto-approve
 echo "Fetching AKS creds for kubectl"
 aws eks update-kubeconfig --region $TF_VAR_region --name $TF_VAR_name-eks
 # Rename contexts
+kubectl config delete-context $TF_VAR_name
 kubectl config rename-context arn:aws:eks:${TF_VAR_region}:${TF_VAR_aws_acccount}:cluster/${TF_VAR_name}-eks $TF_VAR_name
 
 # Install ArgoCD
