@@ -1,0 +1,55 @@
+#!/usr/bin/env groovy
+
+def label = "build-django-large"
+def home = "/home/jenkins"
+def workspace = "${home}/workspace/build-jenkins-operator"
+def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
+
+podTemplate(
+    label: label,
+    containers: [
+        containerTemplate(
+            name: 'build-maven', 
+            image: 'ubuntu:22.04', 
+            ttyEnabled: true,
+            resourceLimitCpu: '4000m',
+            resourceLimitMemory: '2000Mi',
+            resourceRequestCpu: '3000m',
+            resourceRequestMemory: '2000Mi'
+        )
+    ],
+    )
+{
+    node(label) {
+        stage('Install Build Deps') {
+            container('build-maven') {
+                sh """
+                apt update
+                apt install git default-jdk maven -y
+                """
+            }
+        }
+        stage('Clone Demo Repo') {
+            container('build-maven') {
+                sh 'git clone https://github.com/davidmoten/maven-demo.git'
+            }
+        }
+        stage('Build and Test App') {
+            container('build-maven') {
+                sh """
+                cd maven-demo
+                mvn clean install
+                """
+            }
+        }
+        stage('Push Assets') {
+            container('build-maven') {
+                sh """
+                echo "Logic to push assets"
+                cd maven-demo/target
+                ls -l
+                """
+            }
+        }
+    }
+}
