@@ -96,6 +96,3 @@ aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --po
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 4443 --source-group $EKS_SG
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 8080 --source-group $EKS_SG
 
-# Install Vault and Consul
-cd ../services/vault/
-./vault-up.sh

@@ -1,25 +1,24 @@
 #!/usr/bin/env groovy
 
-def label = "build-django"
+def label = "build-django-large"
 def home = "/home/jenkins"
 def workspace = "${home}/workspace/build-jenkins-operator"
 def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
 podTemplate(
     label: label,
-    nodeSelector: 'pool=large'
     containers: [
         containerTemplate(
             name: 'build-maven', 
             image: 'ubuntu:22.04', 
             ttyEnabled: true,
-            resourceLimitCpu: '1000m',
-            resourceLimitMemory: '1000Mi',
-            resourceRequestCpu: '500m',
-            resourceRequestMemory: '500Mi'
+            resourceLimitCpu: '4000m',
+            resourceLimitMemory: '2000Mi',
+            resourceRequestCpu: '3000m',
+            resourceRequestMemory: '2000Mi'
         )
     ],
-)
+    )
 {
     node(label) {
         stage('Install Build Deps') {

@@ -1,22 +1,21 @@
 #!/usr/bin/env groovy
 
-def label = "build-npm"
+def label = "build-npm-large"
 def home = "/home/jenkins"
 def workspace = "${home}/workspace/build-jenkins-operator"
 def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
 podTemplate(
     label: label,
-    nodeSelector: 'pool=small'
     containers: [
         containerTemplate(
             name: 'build-npm', 
             image: 'alpine:3.11', 
             ttyEnabled: true,
-            resourceLimitCpu: '500m',
-            resourceLimitMemory: '500Mi',
-            resourceRequestCpu: '250m',
-            resourceRequestMemory: '250Mi'
+            resourceLimitCpu: '4000m',
+            resourceLimitMemory: '2500Mi',
+            resourceRequestCpu: '3000m',
+            resourceRequestMemory: '2250Mi'
         )
     ],
     )
