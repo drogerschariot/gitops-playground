@@ -7,7 +7,7 @@ def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
 podTemplate(
     label: label,
-    nodeSelector: 'pool=large'
+    nodeSelector: 'pool=on-demand'
     containers: [
         containerTemplate(
             name: 'build-npm', 
