@@ -119,3 +119,33 @@ pipelineJob('k8s-test4') {
         }
     }
 }
+
+pipelineJob('k8s-test5') {
+    displayName('Jenkins Operator Test 5 - Seed change')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/drogerschariot/gitops-playground')
+                        credentials('jenkins-operator')
+                    }
+                    branches('blog/jenkins')
+                }
+            }
+            scriptPath('services/jenkins/cicd/pipelines/k8s_test4.jenkins')
+        }
+    }
+}
