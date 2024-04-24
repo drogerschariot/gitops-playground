@@ -10,8 +10,7 @@ Spin up a K8s cluster in a real world kubernetes sandbox environment with one co
 - [Cert Manager](https://cert-manager.io/)
 - [Keda](https://keda.sh/)
 - [K8s Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
-- [Hashicorp Vault with injector](https://www.vaultproject.io/)
-- [Hashicorp Consul](https://www.consul.io/)
+
 
 ## AWS
 
@@ -71,6 +70,8 @@ The following services are available to install and test. Click on the link to a
 - [Wazuh and Wazuh DaemonSet Agent](https://github.com/drogerschariot/gitops-playground/blob/main/services/wazuh/README.md)
 - [Jenkins Operator](https://github.com/drogerschariot/gitops-playground/blob/main/services/jenkins/README.md)
 - [GitLabs](https://github.com/drogerschariot/gitops-playground/tree/main/services/gitlab)
+- Hashicorp Vault with injector
+- Hashicorp Consul
 
 ## Teardown
 
