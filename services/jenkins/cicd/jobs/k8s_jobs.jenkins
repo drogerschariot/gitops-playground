@@ -22,7 +22,7 @@ pipelineJob('k8s-test1') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('blog/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test1.jenkins')
@@ -52,7 +52,7 @@ pipelineJob('k8s-test2') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('blog/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test2.jenkins')
@@ -82,7 +82,7 @@ pipelineJob('k8s-test3') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('blog/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test3.jenkins')
@@ -112,7 +112,7 @@ pipelineJob('k8s-test4') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('blog/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test4.jenkins')
