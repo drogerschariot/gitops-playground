@@ -7,10 +7,10 @@ def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
 
 podTemplate(
     label: label,
-    //nodeSelector: 'karpenter.sh/capacity-type=on-demand',
+    nodeSelector: 'karpenter.sh/capacity-type=on-demand',
     containers: [
         containerTemplate(
-            name: 'build-maven', 
+            name: 'build-maven-large',
             image: 'ubuntu:22.04', 
             ttyEnabled: true,
             resourceLimitCpu: '4000m',
@@ -23,7 +23,7 @@ podTemplate(
 {
     node(label) {
         stage('Install Build Deps') {
-            container('build-maven') {
+            container('build-maven-large') {
                 sh """
                 apt update
                 apt install git default-jdk maven -y
@@ -31,12 +31,12 @@ podTemplate(
             }
         }
         stage('Clone Demo Repo') {
-            container('build-maven') {
+            container('build-maven-large') {
                 sh 'git clone https://github.com/davidmoten/maven-demo.git'
             }
         }
         stage('Build and Test App') {
-            container('build-maven') {
+            container('build-maven-large') {
                 sh """
                 cd maven-demo
                 mvn clean install
@@ -44,7 +44,7 @@ podTemplate(
             }
         }
         stage('Push Assets') {
-            container('build-maven') {
+            container('build-maven-large') {
                 sh """
                 echo "Logic to push assets"
                 cd maven-demo/target
