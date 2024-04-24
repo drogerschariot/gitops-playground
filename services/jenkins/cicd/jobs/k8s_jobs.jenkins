@@ -22,7 +22,7 @@ pipelineJob('k8s-test1') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('service/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test1.jenkins')
@@ -31,7 +31,7 @@ pipelineJob('k8s-test1') {
 }
 
 pipelineJob('k8s-test2') {
-    displayName('Jenkins Operator Test 2 - Build Django')
+    displayName('Jenkins Operator Test 2 - Build Maven')
 
     logRotator {
         numToKeep(10)
@@ -52,10 +52,70 @@ pipelineJob('k8s-test2') {
                         url('https://github.com/drogerschariot/gitops-playground')
                         credentials('jenkins-operator')
                     }
-                    branches('service/jenkins')
+                    branches('main')
                 }
             }
             scriptPath('services/jenkins/cicd/pipelines/k8s_test2.jenkins')
+        }
+    }
+}
+
+pipelineJob('k8s-test3') {
+    displayName('Jenkins Operator Test 3 - Build NPM LARGE')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/drogerschariot/gitops-playground')
+                        credentials('jenkins-operator')
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath('services/jenkins/cicd/pipelines/k8s_test3.jenkins')
+        }
+    }
+}
+
+pipelineJob('k8s-test4') {
+    displayName('Jenkins Operator Test 4 - Build Maven')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/drogerschariot/gitops-playground')
+                        credentials('jenkins-operator')
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath('services/jenkins/cicd/pipelines/k8s_test4.jenkins')
         }
     }
 }

@@ -26,6 +26,9 @@ terraform apply -parallelism=1 -auto-approve
 # Update .kube/config context
 echo "Fetching AKS creds for kubectl"
 aws eks update-kubeconfig --region $TF_VAR_region --name $TF_VAR_name-eks
+# Rename contexts
+kubectl config delete-context $TF_VAR_name
+kubectl config rename-context arn:aws:eks:${TF_VAR_region}:${TF_VAR_aws_acccount}:cluster/${TF_VAR_name}-eks $TF_VAR_name
 
 # Install ArgoCD
 echo "Installing ArgoCD"
@@ -93,6 +96,3 @@ aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --po
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 4443 --source-group $EKS_SG
 aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 8080 --source-group $EKS_SG
 
-# Install Vault and Consul
-cd ../services/vault/
-./vault-up.sh

@@ -19,4 +19,5 @@ sleep 60
 
 for i in {1..10}; do kubectl wait --for=condition=ready pod -l cnpg.io/instanceName=test-db-1 --namespace test-db --timeout=600s && break || echo "Waiting for Cluster to start..."; sleep 30; done
 echo "Installing DNPG Grafana Dashboard..."
+
 kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.19/docs/src/samples/monitoring/grafana-configmap.yaml --namespace monitoring
