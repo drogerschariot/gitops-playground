@@ -82,6 +82,3 @@ echo "Ingress public IP"
 kubectl get svc ingress-nginx-controller --namespace ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 echo ""
 
-# Install Vault and Consul
-cd ../services/vault/
-./vault-up.sh 
