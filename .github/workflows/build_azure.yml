@@ -11,7 +11,7 @@ permissions:
 
 env:
   TF_VAR_name: gitops-playground-githubactions
-  TF_VAR_k8s_version: 1.27.3
+  TF_VAR_k8s_version: 1.29.2
   TF_VAR_location: eastus
   TF_VAR_node_size: standard_d2ads_v5
   TF_VAR_node_count: 5
