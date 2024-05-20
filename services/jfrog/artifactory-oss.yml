@@ -13,7 +13,7 @@ spec:
       allowEmpty: true
   source:
     chart: artifactory-oss
-    repoURL: https://charts.jfrog.io/jfrog
+    repoURL: https://charts.jfrog.io
     targetRevision: 107.71.5
     helm:
       releaseName: artifactory-oss
