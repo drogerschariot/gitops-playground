@@ -69,9 +69,8 @@ The following services are available to install and test. Click on the link to a
 - [Elasticsearch](https://github.com/drogerschariot/gitops-playground/blob/main/services/elasticsearch/README.md)
 - [Wazuh and Wazuh DaemonSet Agent](https://github.com/drogerschariot/gitops-playground/blob/main/services/wazuh/README.md)
 - [Jenkins Operator](https://github.com/drogerschariot/gitops-playground/blob/main/services/jenkins/README.md)
-- [GitLabs](https://github.com/drogerschariot/gitops-playground/tree/main/services/gitlab)
-- Hashicorp Vault with injector
-- Hashicorp Consul
+- [GitLabs](https://github.com/drogerschariot/gitops-playground/tree/main/services/gitlab/README.md)
+- [Hashicorp Vault with injector](https://github.com/drogerschariot/gitops-playground/blob/main/services/vault/README.md)
 
 ## Teardown
 
